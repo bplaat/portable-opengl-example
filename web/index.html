@@ -11,11 +11,16 @@
     <canvas id="canvas"></canvas>
 <script type="module">
 const canvas = document.getElementById('canvas');
-const gl = canvas.getContext('webgl');
+const gl = canvas.getContext('webgl2');
 async function init() {
     const { instance } = await WebAssembly.instantiateStreaming(fetch('game.wasm'), {
         env: {
-            random: Math.random,
+            sin(x) {
+                return Math.sin(x);
+            },
+            time(timer) {
+                return Math.floor(Date.now() / 1000);
+            },
             glViewport(x, y, width, height) {
                 gl.viewport(x, y, width, height);
             },
@@ -36,6 +41,7 @@ async function init() {
             }
         }
     });
+    console.log(`Using OpenGL ${gl.getParameter(gl.VERSION)} on ${gl.getParameter(gl.RENDERER)}`);
 
     function resize() {
         canvas.width = window.innerWidth * window.devicePixelRatio;

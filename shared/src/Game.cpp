@@ -1,5 +1,6 @@
 #include "Game.h"
 #include "Box.h"
+#include "Random.h"
 #include "bindings.h"
 #include "utils.h"
 
@@ -9,13 +10,17 @@ Game *Game::getInstance() {
 }
 
 void Game::init() {
+    Random random(time(NULL));
+
+#ifdef PLATFORM_WEB
     // Grow heap with 2 * 64 KiB pages
     __builtin_wasm_memory_grow(0, 2);
+#endif
 
     boxesSize = 4 * 1024;
     boxes = (Box **)malloc(boxesSize * sizeof(Box *));
     for (int32_t i = 0; i < boxesSize; i++) {
-        boxes[i] = new Box();
+        boxes[i] = new Box(&random);
     }
 }
 
