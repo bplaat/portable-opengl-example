@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <title>Simple WebAssembly WebGL Example</title>
+    <link rel="shortcut icon" href="data:,">
+    <style>body{margin:0}#canvas{display:block}</style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+<script type="module">
+const canvas = document.getElementById('canvas');
+const gl = canvas.getContext('webgl');
+async function init() {
+    const { instance } = await WebAssembly.instantiateStreaming(fetch('game.wasm'), {
+        env: {
+            random: Math.random,
+            glViewport(x, y, width, height) {
+                gl.viewport(x, y, width, height);
+            },
+            glClearColor(red, green, blue, alpha) {
+                gl.clearColor(red, green, blue, alpha);
+            },
+            glClear(mask) {
+                gl.clear(mask);
+            },
+            glScissor(x, y, width, height) {
+                gl.scissor(x, y, width, height);
+            },
+            glEnable(cap) {
+                gl.enable(cap);
+            },
+            glDisable(cap) {
+                gl.disable(cap);
+            }
+        }
+    });
+
+    function resize() {
+        canvas.width = window.innerWidth * window.devicePixelRatio;
+        canvas.height = window.innerHeight * window.devicePixelRatio;
+        canvas.style.width = `${window.innerWidth}px`;
+        canvas.style.height = `${window.innerHeight}px`;
+        instance.exports.resize(window.innerWidth, window.innerHeight, window.devicePixelRatio);
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    instance.exports.init();
+    let time = window.performance.now();
+    function loop() {
+        window.requestAnimationFrame(loop);
+        const newTime = window.performance.now();
+        instance.exports.update(Math.min((newTime - time) / 1000, 1));
+        time = newTime;
+        instance.exports.render();
+    }
+    loop();
+}
+init();
+</script>
+</body>
+</html>
