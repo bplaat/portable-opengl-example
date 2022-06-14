@@ -6,8 +6,8 @@
 
 #ifdef PLATFORM_DESKTOP
     #include <glad/glad.h>
-    #include <stdio.h>
     #include <math.h>
+    #include <stdio.h>
     #include <time.h>
 #endif
 

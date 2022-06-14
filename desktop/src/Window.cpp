@@ -1,6 +1,6 @@
 #include "Window.h"
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 void Window::sizeCallback(GLFWwindow *window, int width, int height) {
     Window *windowPtr = (Window *)glfwGetWindowUserPointer(window);

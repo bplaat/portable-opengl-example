@@ -13,7 +13,7 @@
 const canvas = document.getElementById('canvas');
 const gl = canvas.getContext('webgl2');
 async function init() {
-    const { instance } = await WebAssembly.instantiateStreaming(fetch('game.wasm'), {
+    const { instance } = await WebAssembly.instantiateStreaming(fetch('build/game.wasm'), {
         env: {
             sin(x) {
                 return Math.sin(x);
