@@ -3,14 +3,6 @@
 
 #include "bindings.h"
 
-extern "C" {
-
-#ifdef PLATFORM_WEB
-__attribute__((export_name("textureLoadCallback")))
-#endif
-void textureLoadCallback(void *ptr, int32_t width, int32_t height, void *data);
-}
-
 class Texture {
   public:
     const char *path;
@@ -19,6 +11,8 @@ class Texture {
     bool transparent;
     bool pixelated;
     uint32_t texture;
+
+    static void loadCallback(void *ptr, int32_t width, int32_t height, void *data);
 
     Texture(const char *path, bool transparent, bool pixelated);
 

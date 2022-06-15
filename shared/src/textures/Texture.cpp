@@ -1,7 +1,7 @@
 #include "textures/Texture.h"
 #include "bindings.h"
 
-void textureLoadCallback(void *ptr, int32_t width, int32_t height, void *data) {
+void Texture::loadCallback(void *ptr, int32_t width, int32_t height, void *data) {
     Texture *texture = (Texture *)ptr;
     texture->width = width;
     texture->height = height;
@@ -26,7 +26,7 @@ void textureLoadCallback(void *ptr, int32_t width, int32_t height, void *data) {
 
 Texture::Texture(const char *path, bool transparent, bool pixelated)
     : path(path), transparent(transparent), pixelated(pixelated) {
-    loadTexture(path, this, textureLoadCallback);
+    loadTexture(path, this, Texture::loadCallback);
 }
 
 Texture::~Texture() {

@@ -84,7 +84,7 @@ else
             fi
 
             if [[ $file -nt $object ]]; then
-                if clang -DPLATFORM_WEB -Os -c -Ishared/include $file --target=wasm32 -nostdlib -o $object; then
+                if clang -DPLATFORM_WEB -Os -c -Ishared/include $file --target=wasm32 -o $object; then
                     echo $file
                 else
                     exit
@@ -94,6 +94,10 @@ else
 
         clang -Os $(find web/build -name *.o) --target=wasm32 -nostdlib -Wl,--no-entry \
             -Wl,--allow-undefined -Wl,-z,stack-size=$[256 * 1024] -o web/build/game.wasm
+
+        wasm2wat web/build/game.wasm > web/build/game.wat
+        sed -i "" "s/(export \"memory\" (memory 0))/(export \"memory\" (memory 0))\n  (export \"table\" (table 0))/" web/build/game.wat
+        wat2wasm web/build/game.wat -o web/build/game.wasm
 
         rm -rf web/build/shared
     fi
@@ -111,7 +115,7 @@ else
         fi
 
         if [[ $file -nt $object ]]; then
-            if clang -DPLATFORM_WEB -Os -c -Ishared/include $file --target=wasm32 -msimd128 -nostdlib -o $object; then
+            if clang -DPLATFORM_WEB -Os -c -Ishared/include $file --target=wasm32 -msimd128 -o $object; then
                 echo $file
             else
                 exit
@@ -125,4 +129,8 @@ else
 
     clang -Os $(find web/build -name *.o) --target=wasm32 -msimd128 -nostdlib -Wl,--no-entry \
         -Wl,--allow-undefined -Wl,-z,stack-size=$[256 * 1024] -o web/build/game-simd.wasm
+
+    wasm2wat web/build/game-simd.wasm > web/build/game-simd.wat
+    sed -i "" "s/(export \"memory\" (memory 0))/(export \"memory\" (memory 0))\n  (export \"table\" (table 0))/" web/build/game-simd.wat
+    wat2wasm web/build/game-simd.wat -o web/build/game-simd.wasm
 fi

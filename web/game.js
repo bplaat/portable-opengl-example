@@ -199,7 +199,7 @@ const bindings = {
         image.onload = () => {
             const imageId = images.length + 1;
             images[imageId - 1] = image;
-            instance.exports.textureLoadCallback(ptr, image.width, image.height, imageId);
+            instance.exports.table.get(callback)(ptr, image.width, image.height, imageId);
         };
     }
 };
