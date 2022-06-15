@@ -1,8 +1,7 @@
-#include "Box.h"
+#include "objects/Box.h"
 #include "Game.h"
-#include "Random.h"
 #include "bindings.h"
-#include "utils.h"
+#include "math/Random.h"
 
 Box::Box(Random *random) {
     width = random->randInt(10, 50);

@@ -55,9 +55,6 @@ Window::Window(const char *title, int32_t width, int32_t height)
         glfwDestroyWindow(window);
         exit(EXIT_FAILURE);
     }
-
-    // Print OpenGL version info
-    printf("Using OpenGL %s on %s\n", glGetString(GL_VERSION), glGetString(GL_RENDERER));
 }
 
 void Window::setMinSize(int32_t minWidth, int32_t minHeight) {

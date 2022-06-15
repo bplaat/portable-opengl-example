@@ -1,7 +1,7 @@
 #ifndef BOX_H
 #define BOX_H
 
-#include "Random.h"
+#include "math/Random.h"
 #include <stdint.h>
 
 class Box {

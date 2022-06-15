@@ -1,10 +1,20 @@
+#!/bin/sh
+# A simple incremental cpp project build script
+# ./build.sh ; Build the web wasm simd bundle for Firefox and Chrome (not Safari for the moment!)
+# ./build.sh release ; Build the web wasm without simd bundle for all modern browsers
+# ./build.sh desktop ; Build the desktop application and run it
+# ./build.sh clean ; Remove all build folders (and so all the incremental builded objects)
+# ./build.sh format ; Run the clang formatter over the whole c and cpp code base
+# Tip: If you run a webserver with live refresh you wont have to manually refresh the webbrowser
+# https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer
+
 # Remove build folders
 if [[ $1 == "clean" ]]; then
     rm -rf desktop/build web/build
 
 # Format source code
 elif [[ $1 == "format" ]]; then
-    clang-format -i $(find . -name *.h) $(find . -name *.c) $(find . -name *.cpp)
+    clang-format -i $(find . -name *.h -o -name *.c -o -name *.cpp)
 
 # Desktop build script
 elif [[ $1 == "desktop" ]]; then
@@ -54,8 +64,38 @@ elif [[ $1 == "desktop" ]]; then
 
 # Web build script
 else
+    # Also build without WASM SIMD version
+    if [[ $1 == "release" ]]; then
+        rm -rf web/build/shared
+        mkdir -p web/build/shared
+
+        for file in $(find shared/src -name *.cpp); do
+            name=${file%.*}
+            object="web/build/shared/${name:11}.o"
+
+            folder=$(dirname ${name:11})
+            if [[ "$folder" != "." ]]; then
+                mkdir -p "web/build/shared/$folder"
+            fi
+
+            if [[ $file -nt $object ]]; then
+                if clang -DPLATFORM_WEB -Os -c -Ishared/include $file --target=wasm32 -nostdlib -o $object; then
+                    echo $file
+                else
+                    exit
+                fi
+            fi
+        done
+
+        clang -Os $(find web/build -name *.o) --target=wasm32 -nostdlib -Wl,--no-entry \
+            -Wl,--allow-undefined -Wl,-z,stack-size=$[256 * 1024] -o web/build/game.wasm
+
+        rm -rf web/build/shared
+    fi
+
     mkdir -p web/build/shared
 
+    # Build WASM SIMD version
     for file in $(find shared/src -name *.cpp); do
         name=${file%.*}
         object="web/build/shared/${name:11}.o"
@@ -66,7 +106,7 @@ else
         fi
 
         if [[ $file -nt $object ]]; then
-            if clang -DPLATFORM_WEB -Os -c -Ishared/include $file --target=wasm32 -o $object; then
+            if clang -DPLATFORM_WEB -Os -c -Ishared/include $file --target=wasm32 -msimd128 -nostdlib -o $object; then
                 echo $file
             else
                 exit
@@ -74,6 +114,6 @@ else
         fi
     done
 
-    clang -Os $(find web/build -name *.o) --target=wasm32 -nostdlib -Wl,--no-entry \
-        -Wl,--allow-undefined -Wl,-z,stack-size=$[256 * 1024] -o web/build/game.wasm
+    clang -Os $(find web/build -name *.o) --target=wasm32 -msimd128 -nostdlib -Wl,--no-entry \
+        -Wl,--allow-undefined -Wl,-z,stack-size=$[256 * 1024] -o web/build/game-simd.wasm
 fi

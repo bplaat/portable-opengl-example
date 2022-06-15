@@ -4,7 +4,8 @@
 #include <stddef.h>
 #include <stdint.h>
 class Game;
-#include "Box.h"
+#include "objects/Box.h"
+#include "objects/PerspectiveCamera.h"
 
 class Game {
   public:
@@ -12,11 +13,19 @@ class Game {
     int32_t height;
     float scale;
 
-  private:
+    Random *random;
+    uint32_t program;
+    uint32_t planeVertrexArray;
+    uint32_t cubeVertrexArray;
+    uint32_t matrixUniform;
+    uint32_t cameraUniform;
+    uint32_t textureUniform;
+    PerspectiveCamera *camera;
+
     Box **boxes;
     size_t boxesSize;
+    float rotation;
 
-  public:
     static Game *getInstance();
 
     void init();

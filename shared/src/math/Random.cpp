@@ -1,4 +1,4 @@
-#include "Random.h"
+#include "math/Random.h"
 #include "bindings.h"
 
 Random::Random() : seed(1) {}
