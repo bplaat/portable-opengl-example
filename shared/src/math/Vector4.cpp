@@ -72,7 +72,7 @@ Vector4 &Vector4::operator+=(Vector4 const &rhs) {
 #ifdef __ARM_NEON__
     vst1q_f32(&x, vaddq_f32(vld1q_f32(&x), vld1q_f32(&rhs.x)));
 #elif defined __SSE2__
-    _mm_store_ps(&x, _mm_add_ps(_mm_load_ps(&x), _mm_load_ps(rhs)));
+    _mm_store_ps(&x, _mm_add_ps(_mm_load_ps(&x), _mm_load_ps(&rhs.x)));
 #else
     x += rhs.x;
     y += rhs.y;
@@ -86,7 +86,7 @@ Vector4 &Vector4::operator-=(Vector4 const &rhs) {
 #ifdef __ARM_NEON__
     vst1q_f32(&x, vsubq_f32(vld1q_f32(&x), vld1q_f32(&rhs.x)));
 #elif defined __SSE2__
-    _mm_store_ps(&x, _mm_sub_ps(_mm_load_ps(&x), _mm_load_ps(rhs)));
+    _mm_store_ps(&x, _mm_sub_ps(_mm_load_ps(&x), _mm_load_ps(&rhs.x)));
 #else
     x -= rhs.x;
     y -= rhs.y;
@@ -100,7 +100,7 @@ Vector4 &Vector4::operator*=(Vector4 const &rhs) {
 #ifdef __ARM_NEON__
     vst1q_f32(&x, vmulq_f32(vld1q_f32(&x), vld1q_f32(&rhs.x)));
 #elif defined __SSE2__
-    _mm_store_ps(&x, _mm_mul_ps(_mm_load_ps(&x), _mm_load_ps(rhs)));
+    _mm_store_ps(&x, _mm_mul_ps(_mm_load_ps(&x), _mm_load_ps(&rhs.x)));
 #else
     x *= rhs.x;
     y *= rhs.y;
@@ -114,7 +114,7 @@ Vector4 &Vector4::operator/=(Vector4 const &rhs) {
 #ifdef __ARM_NEON__
     vst1q_f32(&x, vdivq_f32(vld1q_f32(&x), vld1q_f32(&rhs.x)));
 #elif defined __SSE2__
-    _mm_store_ps(&x, _mm_div_ps(_mm_load_ps(&x), _mm_load_ps(rhs)));
+    _mm_store_ps(&x, _mm_div_ps(_mm_load_ps(&x), _mm_load_ps(&rhs.x)));
 #else
     x /= rhs.x;
     y /= rhs.y;

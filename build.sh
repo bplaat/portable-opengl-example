@@ -20,32 +20,14 @@ elif [[ $1 == "format" ]]; then
 elif [[ $1 == "desktop" ]]; then
     mkdir -p desktop/build/desktop desktop/build/shared
 
-    for file in $(find shared/src -name *.cpp); do
-        name=${file%.*}
-        object="desktop/build/shared/${name:11}.o"
-
-        folder=$(dirname ${name:11})
-        if [[ "$folder" != "." ]]; then
-            mkdir -p "desktop/build/shared/$folder"
-        fi
-
-        if [[ $file -nt $object ]]; then
-            if g++ -DPLATFORM_DESKTOP -Ofast -c -Ishared/include -Idesktop/include $file -o $object $(pkg-config --cflags glfw3); then
-                echo $file
-            else
-                exit
-            fi
-        fi
-    done
-
-    for file in $(find desktop/src -name *.c -o -name *.cpp); do
+    for file in $(find shared/src desktop/src -name *.c -o -name *.cpp); do
         name=${file%.*}
         ext=${file##*.}
-        object="desktop/build/desktop/${name:11}.o"
-
+        if [[ ${file::6} == "shared" ]]; then module="shared"; else module="desktop"; fi
+        object="desktop/build/$module/${name:11}.o"
         folder=$(dirname ${name:11})
         if [[ "$folder" != "." ]]; then
-            mkdir -p "desktop/build/desktop/$folder"
+            mkdir -p "desktop/build/$module/$folder"
         fi
 
         if [[ $file -nt $object ]]; then
@@ -77,7 +59,6 @@ else
         for file in $(find shared/src -name *.cpp); do
             name=${file%.*}
             object="web/build/shared/${name:11}.o"
-
             folder=$(dirname ${name:11})
             if [[ "$folder" != "." ]]; then
                 mkdir -p "web/build/shared/$folder"
@@ -96,7 +77,11 @@ else
             -Wl,--allow-undefined -Wl,-z,stack-size=$[256 * 1024] -o web/build/game.wasm
 
         wasm2wat web/build/game.wasm > web/build/game.wat
-        sed -i "" "s/(export \"memory\" (memory 0))/(export \"memory\" (memory 0))\n  (export \"table\" (table 0))/" web/build/game.wat
+        if [ "$(uname -s)" == "Darwin" ]; then
+            sed -i "" "s/(export \"memory\" (memory 0))/(export \"memory\" (memory 0))\n  (export \"table\" (table 0))/" web/build/game.wat
+        else
+            sed -i "s/(export \"memory\" (memory 0))/(export \"memory\" (memory 0))\n  (export \"table\" (table 0))/" web/build/game.wat
+        fi
         wat2wasm web/build/game.wat -o web/build/game.wasm
 
         rm -rf web/build/shared
@@ -108,7 +93,6 @@ else
     for file in $(find shared/src -name *.cpp); do
         name=${file%.*}
         object="web/build/shared/${name:11}.o"
-
         folder=$(dirname ${name:11})
         if [[ "$folder" != "." ]]; then
             mkdir -p "web/build/shared/$folder"
@@ -131,6 +115,10 @@ else
         -Wl,--allow-undefined -Wl,-z,stack-size=$[256 * 1024] -o web/build/game-simd.wasm
 
     wasm2wat web/build/game-simd.wasm > web/build/game-simd.wat
-    sed -i "" "s/(export \"memory\" (memory 0))/(export \"memory\" (memory 0))\n  (export \"table\" (table 0))/" web/build/game-simd.wat
+    if [ "$(uname -s)" == "Darwin" ]; then
+        sed -i "" "s/(export \"memory\" (memory 0))/(export \"memory\" (memory 0))\n  (export \"table\" (table 0))/" web/build/game-simd.wat
+    else
+        sed -i "s/(export \"memory\" (memory 0))/(export \"memory\" (memory 0))\n  (export \"table\" (table 0))/" web/build/game-simd.wat
+    fi
     wat2wasm web/build/game-simd.wat -o web/build/game-simd.wasm
 fi
