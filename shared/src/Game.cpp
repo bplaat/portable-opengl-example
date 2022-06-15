@@ -246,25 +246,8 @@ void Game::render() {
     }
     glDisable(GL_SCISSOR_TEST);
 
-    // Draw tree
-    glUseProgram(program);
-    glBindVertexArray(planeVertrexArray);
-    glBindTexture(GL_TEXTURE_2D, treeTexture->texture);
-
-    Matrix4 cameraMatrix;
-    cameraMatrix.flat(width, height);
-    glUniformMatrix4fv(cameraUniform, 1, GL_FALSE, &cameraMatrix.elements[0]);
-
-    Matrix4 itemMatrix;
-    itemMatrix.rect(10, 10, 256, 256);
-    glUniformMatrix4fv(matrixUniform, 1, GL_FALSE, &itemMatrix.elements[0]);
-
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_BLEND);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-    glDisable(GL_BLEND);
-
     // Draw crates
+    glUseProgram(program);
     glBindVertexArray(cubeVertrexArray);
     glUniformMatrix4fv(cameraUniform, 1, GL_FALSE, &camera->matrix.elements[0]);
     glBindTexture(GL_TEXTURE_2D, crateTexture->texture);
@@ -285,4 +268,21 @@ void Game::render() {
     plane.updateMatrix();
     glUniformMatrix4fv(matrixUniform, 1, GL_FALSE, &plane.matrix.elements[0]);
     glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    // Draw tree
+    glBindVertexArray(planeVertrexArray);
+    glBindTexture(GL_TEXTURE_2D, treeTexture->texture);
+
+    Matrix4 cameraMatrix;
+    cameraMatrix.flat(width, height);
+    glUniformMatrix4fv(cameraUniform, 1, GL_FALSE, &cameraMatrix.elements[0]);
+
+    Matrix4 itemMatrix;
+    itemMatrix.rect(10, 10, 256, 256);
+    glUniformMatrix4fv(matrixUniform, 1, GL_FALSE, &itemMatrix.elements[0]);
+
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glDisable(GL_BLEND);
 }
