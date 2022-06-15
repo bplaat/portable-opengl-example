@@ -58,8 +58,13 @@ elif [[ $1 == "desktop" ]]; then
         fi
     done
 
+    # Copy assets folder
+    rm -rf desktop/build/assets
+    cp -r assets desktop/build
+
     if g++ $(find desktop/build -name *.o) $(pkg-config --libs glfw3) -o desktop/build/game; then
-        ./desktop/build/game
+        cd desktop/build
+        ./game
     fi
 
 # Web build script
@@ -113,6 +118,10 @@ else
             fi
         fi
     done
+
+    # Copy assets folder
+    rm -rf web/build/assets
+    cp -r assets web/build
 
     clang -Os $(find web/build -name *.o) --target=wasm32 -msimd128 -nostdlib -Wl,--no-entry \
         -Wl,--allow-undefined -Wl,-z,stack-size=$[256 * 1024] -o web/build/game-simd.wasm

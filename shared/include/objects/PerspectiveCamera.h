@@ -10,8 +10,6 @@ class PerspectiveCamera : public Object3D {
     float near;
     float far;
 
-    PerspectiveCamera();
-
     PerspectiveCamera(float fov, float aspect, float near, float far);
 
     void updateMatrix();

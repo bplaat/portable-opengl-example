@@ -6,6 +6,7 @@
 class Game;
 #include "objects/Box.h"
 #include "objects/PerspectiveCamera.h"
+#include "textures/Texture.h"
 
 class Game {
   public:
@@ -20,6 +21,8 @@ class Game {
     uint32_t matrixUniform;
     uint32_t cameraUniform;
     uint32_t textureUniform;
+    Texture *crateTexture;
+    Texture *treeTexture;
     PerspectiveCamera *camera;
 
     Box **boxes;

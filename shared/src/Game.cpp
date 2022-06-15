@@ -47,47 +47,47 @@ float planeVertices[] = {
 
 float cubeVertices[] = {
     // Vertex position, Texture position
-    -0.5, 0.5,  0.5,  1, 1, // Top face
-    0.5,  0.5,  0.5,  0, 1, // Top face
-    0.5,  0.5,  -0.5, 0, 0, // Top face
-    -0.5, 0.5,  0.5,  1, 1, // Top face
-    -0.5, 0.5,  -0.5, 1, 0, // Top face
-    0.5,  0.5,  -0.5, 0, 0, // Top face
+    -0.5, 0.5,  0.5,  1, 0, // Top face
+    0.5,  0.5,  0.5,  0, 0, // Top face
+    0.5,  0.5,  -0.5, 0, 1, // Top face
+    -0.5, 0.5,  0.5,  1, 0, // Top face
+    -0.5, 0.5,  -0.5, 1, 1, // Top face
+    0.5,  0.5,  -0.5, 0, 1, // Top face
 
-    -0.5, -0.5, -0.5, 1, 0, // Front face
-    0.5,  -0.5, -0.5, 0, 0, // Front face
-    0.5,  0.5,  -0.5, 0, 1, // Front face
-    -0.5, -0.5, -0.5, 1, 0, // Front face
-    -0.5, 0.5,  -0.5, 1, 1, // Front face
-    0.5,  0.5,  -0.5, 0, 1, // Front face
+    -0.5, -0.5, -0.5, 1, 1, // Front face
+    0.5,  -0.5, -0.5, 0, 1, // Front face
+    0.5,  0.5,  -0.5, 0, 0, // Front face
+    -0.5, -0.5, -0.5, 1, 1, // Front face
+    -0.5, 0.5,  -0.5, 1, 0, // Front face
+    0.5,  0.5,  -0.5, 0, 0, // Front face
 
-    -0.5, -0.5, 0.5,  0, 0, // Back face
-    0.5,  -0.5, 0.5,  1, 0, // Back face
-    0.5,  0.5,  0.5,  1, 1, // Back face
-    -0.5, -0.5, 0.5,  0, 0, // Back face
-    -0.5, 0.5,  0.5,  0, 1, // Back face
-    0.5,  0.5,  0.5,  1, 1, // Back face
+    -0.5, -0.5, 0.5,  0, 1, // Back face
+    0.5,  -0.5, 0.5,  1, 1, // Back face
+    0.5,  0.5,  0.5,  1, 0, // Back face
+    -0.5, -0.5, 0.5,  0, 1, // Back face
+    -0.5, 0.5,  0.5,  0, 0, // Back face
+    0.5,  0.5,  0.5,  1, 0, // Back face
 
-    -0.5, -0.5, -0.5, 0, 0, // Left face
-    -0.5, -0.5, 0.5,  1, 0, // Left face
-    -0.5, 0.5,  0.5,  1, 1, // Left face
-    -0.5, -0.5, -0.5, 0, 0, // Left face
-    -0.5, 0.5,  -0.5, 0, 1, // Left face
-    -0.5, 0.5,  0.5,  1, 1, // Left face
+    -0.5, -0.5, -0.5, 0, 1, // Left face
+    -0.5, -0.5, 0.5,  1, 1, // Left face
+    -0.5, 0.5,  0.5,  1, 0, // Left face
+    -0.5, -0.5, -0.5, 0, 1, // Left face
+    -0.5, 0.5,  -0.5, 0, 0, // Left face
+    -0.5, 0.5,  0.5,  1, 0, // Left face
 
-    0.5,  -0.5, -0.5, 1, 0, // Right face
-    0.5,  -0.5, 0.5,  0, 0, // Right face
-    0.5,  0.5,  0.5,  0, 1, // Right face
-    0.5,  -0.5, -0.5, 1, 0, // Right face
-    0.5,  0.5,  -0.5, 1, 1, // Right face
-    0.5,  0.5,  0.5,  0, 1, // Right face
+    0.5,  -0.5, -0.5, 1, 1, // Right face
+    0.5,  -0.5, 0.5,  0, 1, // Right face
+    0.5,  0.5,  0.5,  0, 0, // Right face
+    0.5,  -0.5, -0.5, 1, 1, // Right face
+    0.5,  0.5,  -0.5, 1, 0, // Right face
+    0.5,  0.5,  0.5,  0, 0, // Right face
 
-    -0.5, -0.5, -0.5, 0, 0, // Bottom face
-    0.5,  -0.5, -0.5, 1, 0, // Bottom face
-    0.5,  -0.5, 0.5,  1, 1, // Bottom face
-    -0.5, -0.5, -0.5, 0, 0, // Bottom face
-    -0.5, -0.5, 0.5,  0, 1, // Bottom face
-    0.5,  -0.5, 0.5,  1, 1  // Bottom face
+    -0.5, -0.5, -0.5, 0, 1, // Bottom face
+    0.5,  -0.5, -0.5, 1, 1, // Bottom face
+    0.5,  -0.5, 0.5,  1, 0, // Bottom face
+    -0.5, -0.5, -0.5, 0, 1, // Bottom face
+    -0.5, -0.5, 0.5,  0, 0, // Bottom face
+    0.5,  -0.5, 0.5,  1, 0  // Bottom face
 };
 
 Game *Game::getInstance() {
@@ -198,9 +198,13 @@ void Game::init() {
                           (void *)(3 * sizeof(float)));
     glEnableVertexAttribArray(texturePositionLocation);
 
+    // Load textures
+    crateTexture = new Texture("assets/textures/crate.jpg", false, false);
+    treeTexture = new Texture("assets/textures/tree.png", true, false);
+
     // Create camera
     camera = new PerspectiveCamera(radians(75), (float)width / (float)height, 0.1, 1000);
-    camera->position.z = -3;
+    camera->position.z = -3.5;
     camera->updateMatrix();
 
     rotation = 0;
@@ -232,6 +236,7 @@ void Game::render() {
     glViewport(0, 0, width * scale, height * scale);
     glClearColor(1, 1, 1, 1);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glEnable(GL_DEPTH_TEST);
 
     // Draw boxes
     glEnable(GL_SCISSOR_TEST);
@@ -241,36 +246,42 @@ void Game::render() {
     }
     glDisable(GL_SCISSOR_TEST);
 
-    // Draw flat rect
+    // Draw tree
     glUseProgram(program);
     glBindVertexArray(planeVertrexArray);
+    glBindTexture(GL_TEXTURE_2D, treeTexture->texture);
 
     Matrix4 cameraMatrix;
     cameraMatrix.flat(width, height);
     glUniformMatrix4fv(cameraUniform, 1, GL_FALSE, &cameraMatrix.elements[0]);
 
     Matrix4 itemMatrix;
-    itemMatrix.rect(10, 10, 100, 100);
+    itemMatrix.rect(10, 10, 256, 256);
     glUniformMatrix4fv(matrixUniform, 1, GL_FALSE, &itemMatrix.elements[0]);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
 
-    // Draw cubes
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glDisable(GL_BLEND);
+
+    // Draw crates
     glBindVertexArray(cubeVertrexArray);
     glUniformMatrix4fv(cameraUniform, 1, GL_FALSE, &camera->matrix.elements[0]);
+    glBindTexture(GL_TEXTURE_2D, crateTexture->texture);
 
     Object3D plane;
+    plane.rotation.x = rotation;
     plane.rotation.y = rotation;
-    plane.rotation.z = rotation;
     plane.updateMatrix();
     glUniformMatrix4fv(matrixUniform, 1, GL_FALSE, &plane.matrix.elements[0]);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
-    plane.position.x = -2;
+    plane.position.x = -1.75;
     plane.updateMatrix();
     glUniformMatrix4fv(matrixUniform, 1, GL_FALSE, &plane.matrix.elements[0]);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
-    plane.position.x = 2;
+    plane.position.x = 1.75;
     plane.updateMatrix();
     glUniformMatrix4fv(matrixUniform, 1, GL_FALSE, &plane.matrix.elements[0]);
     glDrawArrays(GL_TRIANGLES, 0, 36);

@@ -1,8 +1,6 @@
 #include "objects/PerspectiveCamera.h"
 #include "math/utils.h"
 
-PerspectiveCamera::PerspectiveCamera() : fov(radians(75)), aspect(1), near(0.1), far(1000) {}
-
 PerspectiveCamera::PerspectiveCamera(float fov, float aspect, float near, float far)
     : fov(fov), aspect(aspect), near(near), far(far) {}
 

@@ -41,10 +41,9 @@ async function init() {
     }
 
     let running = true, printBuffer = '';
-    const shaders = [], programs = [], vertexArrays = [], buffers = [], attributes = [], uniforms = [];
+    const shaders = [], programs = [], vertexArrays = [], buffers = [], attributes = [], uniforms = [], textures = [], images = [];
 
     const bindings = {
-
         print(string) {
             printBuffer += readString(string);
         },
@@ -86,6 +85,9 @@ async function init() {
         },
         glDisable(cap) {
             gl.disable(cap);
+        },
+        glBlendFunc(sfactor, dfactor) {
+            gl.blendFunc(sfactor, dfactor);
         },
 
         glCreateShader(shaderType) {
@@ -174,6 +176,44 @@ async function init() {
         },
         glDrawArrays(mode, first, count) {
             gl.drawArrays(mode, first, count);
+        },
+
+        glGenTextures(n, _textures) {
+            const buffer = new Uint32Array(instance.exports.memory.buffer, _textures, n);
+            for (let i = 0; i < n; i++) {
+                const texture = textures.length;
+                textures[texture] = gl.createTexture();
+                buffer[i] = texture;
+            }
+        },
+        glBindTexture(target, texture) {
+            gl.bindTexture(target, textures[texture]);
+        },
+        glTexParameteri(target, pname, param) {
+            gl.texParameteri(target, pname, param);
+        },
+        glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels) {
+            gl.texImage2D(target, level, internalformat, width, height, border, format, type, images[pixels - 1]);
+        },
+        glGenerateMipmap(target) {
+            gl.generateMipmap(target);
+        },
+        glDeleteTextures(n, _textures) {
+            const buffer = new Uint32Array(instance.exports.memory.buffer, _textures, n);
+            for (let i = 0; i < n; i++) {
+                gl.deleteTexture(textures[i]);
+                textures[i] = undefined;
+            }
+        },
+
+        loadTexture(path, ptr, callback) {
+            const image = new Image();
+            image.src = 'build/' + readString(path);
+            image.onload = () => {
+                const imageId = images.length + 1;
+                images[imageId - 1] = image;
+                instance.exports.textureLoadCallback(ptr, image.width, image.height, imageId);
+            };
         }
     };
 

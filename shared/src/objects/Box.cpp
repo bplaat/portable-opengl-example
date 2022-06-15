@@ -7,8 +7,8 @@ Box::Box(Random *random) {
     width = random->randInt(10, 50);
     height = random->randInt(10, 50);
     Game *game = Game::getInstance();
-    x = random->randInt(0, game->width - width);
-    y = random->randInt(0, game->height - height);
+    x = random->randInt((game->width - width) / 4, (game->width - width) / 4 * 3);
+    y = random->randInt((game->height - height) / 4, (game->height - height) / 4 * 3);
     vx = random->randInt(-250, 250);
     vy = random->randInt(-250, 250);
     color = random->randInt(0, 0xffffff);
