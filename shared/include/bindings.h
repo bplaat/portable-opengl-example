@@ -14,8 +14,8 @@
 void print(const char *string);
 void println(const char *string);
 
-void loadTexture(const char *path, void *ptr, void (*callback)(void *ptr, int32_t width, int32_t height, void *data));
-void freeTexture(void *data);
+void Texture_Load(const char *path, void *ptr, void (*callback)(void *ptr, int32_t width, int32_t height, void *data));
+void Texture_Free(void *data);
 
 #endif
 
@@ -116,9 +116,9 @@ extern void glGenerateMipmap(uint32_t target);
 extern void glDeleteTextures(int32_t n, uint32_t *textures);
 
 // Texture bindings
-extern void loadTexture(const char *path, void *ptr,
-                        void (*callback)(void *ptr, int32_t width, int32_t height, void *data));
-    #define freeTexture(...)
+extern void Texture_Load(const char *path, void *ptr,
+                         void (*callback)(void *ptr, int32_t width, int32_t height, void *data));
+    #define Texture_Free(...)
 }
 
 // C++ standard library bindings

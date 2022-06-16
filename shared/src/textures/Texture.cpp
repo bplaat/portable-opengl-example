@@ -21,12 +21,12 @@ void Texture::loadCallback(void *ptr, int32_t width, int32_t height, void *data)
                  texture->transparent ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, data);
     glGenerateMipmap(GL_TEXTURE_2D);
 
-    freeTexture(data);
+    Texture_Free(data);
 }
 
 Texture::Texture(const char *path, bool transparent, bool pixelated)
     : path(path), transparent(transparent), pixelated(pixelated) {
-    loadTexture(path, this, Texture::loadCallback);
+    Texture_Load(path, this, Texture::loadCallback);
 }
 
 Texture::~Texture() {

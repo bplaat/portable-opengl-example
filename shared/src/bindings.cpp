@@ -12,13 +12,13 @@ void println(const char *string) {
     printf("%s\n", string);
 }
 
-void loadTexture(const char *path, void *ptr, void (*callback)(void *ptr, int32_t width, int32_t height, void *data)) {
+void Texture_Load(const char *path, void *ptr, void (*callback)(void *ptr, int32_t width, int32_t height, void *data)) {
     int32_t width, height, channels;
     void *data = stbi_load(path, &width, &height, &channels, 0);
     callback(ptr, width, height, data);
 }
 
-void freeTexture(void *data) {
+void Texture_Free(void *data) {
     stbi_image_free(data);
 }
 

@@ -32,7 +32,7 @@ elif [[ $1 == "desktop" ]]; then
 
         if [[ $file -nt $object ]]; then
             if [[ $ext  == "c" ]]; then compiler="gcc"; else compiler="g++"; fi
-            if $compiler -DPLATFORM_DESKTOP -Ofast -c -Ishared/include -Idesktop/include $file -o $object $(pkg-config --cflags glfw3); then
+            if $compiler -c -DPLATFORM_DESKTOP -Ishared/include -Idesktop/include -Ofast $file -o $object $(pkg-config --cflags glfw3); then
                 echo $file
             else
                 exit
@@ -44,6 +44,7 @@ elif [[ $1 == "desktop" ]]; then
     rm -rf desktop/build/assets
     cp -r assets desktop/build
 
+    # Link final executable
     if g++ $(find desktop/build -name *.o) $(pkg-config --libs glfw3) -o desktop/build/game; then
         cd desktop/build
         ./game
@@ -65,7 +66,7 @@ else
             fi
 
             if [[ $file -nt $object ]]; then
-                if clang -DPLATFORM_WEB -Os -c -Ishared/include $file --target=wasm32 -o $object; then
+                if clang -c -DPLATFORM_WEB -Ishared/include -Os --target=wasm32 $file -o $object; then
                     echo $file
                 else
                     exit
@@ -73,20 +74,12 @@ else
             fi
         done
 
-        clang -Os $(find web/build -name *.o) --target=wasm32 -nostdlib -Wl,--no-entry \
-            -Wl,--allow-undefined -Wl,-z,stack-size=$[256 * 1024] -o web/build/game.wasm
-
-        wasm2wat web/build/game.wasm > web/build/game.wat
-        if [ "$(uname -s)" == "Darwin" ]; then
-            sed -i "" "s/(export \"memory\" (memory 0))/(export \"memory\" (memory 0))\n  (export \"table\" (table 0))/" web/build/game.wat
-        else
-            sed -i "s/(export \"memory\" (memory 0))/(export \"memory\" (memory 0))\n  (export \"table\" (table 0))/" web/build/game.wat
-        fi
-        wat2wasm web/build/game.wat -o web/build/game.wasm
-
-        rm -rf web/build/shared
+        # Link final wasm bundle
+        wasm-ld $(find web/build -name *.o) --no-entry --allow-undefined \
+            -z,stack-size=$[256 * 1024] --export-table -o web/build/game.wasm
     fi
 
+    rm -rf web/build/shared
     mkdir -p web/build/shared
 
     # Build WASM SIMD version
@@ -99,7 +92,7 @@ else
         fi
 
         if [[ $file -nt $object ]]; then
-            if clang -DPLATFORM_WEB -Os -c -Ishared/include $file --target=wasm32 -msimd128 -o $object; then
+            if clang -c -DPLATFORM_WEB -Ishared/include -Os --target=wasm32 -msimd128 $file -o $object; then
                 echo $file
             else
                 exit
@@ -111,14 +104,7 @@ else
     rm -rf web/build/assets
     cp -r assets web/build
 
-    clang -Os $(find web/build -name *.o) --target=wasm32 -msimd128 -nostdlib -Wl,--no-entry \
-        -Wl,--allow-undefined -Wl,-z,stack-size=$[256 * 1024] -o web/build/game-simd.wasm
-
-    wasm2wat web/build/game-simd.wasm > web/build/game-simd.wat
-    if [ "$(uname -s)" == "Darwin" ]; then
-        sed -i "" "s/(export \"memory\" (memory 0))/(export \"memory\" (memory 0))\n  (export \"table\" (table 0))/" web/build/game-simd.wat
-    else
-        sed -i "s/(export \"memory\" (memory 0))/(export \"memory\" (memory 0))\n  (export \"table\" (table 0))/" web/build/game-simd.wat
-    fi
-    wat2wasm web/build/game-simd.wat -o web/build/game-simd.wasm
+    # Link final wasm bundle
+    wasm-ld $(find web/build -name *.o) --no-entry --allow-undefined \
+        -z,stack-size=$[256 * 1024] --export-table -o web/build/game-simd.wasm
 fi

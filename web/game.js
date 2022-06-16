@@ -193,13 +193,13 @@ const bindings = {
         }
     },
 
-    loadTexture(path, ptr, callback) {
+    Texture_Load(path, ptr, callback) {
         const image = new Image();
         image.src = 'build/' + readString(path);
         image.onload = () => {
             const imageId = images.length + 1;
             images[imageId - 1] = image;
-            instance.exports.table.get(callback)(ptr, image.width, image.height, imageId);
+            instance.exports.__indirect_function_table.get(callback)(ptr, image.width, image.height, imageId);
         };
     }
 };
