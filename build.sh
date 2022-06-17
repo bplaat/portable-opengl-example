@@ -9,21 +9,21 @@
 # https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer
 
 # Remove build folders
-if [[ $1 == "clean" ]]; then
+if [[ $1 = "clean" ]]; then
     rm -rf desktop/build web/build
 
 # Format source code
-elif [[ $1 == "format" ]]; then
+elif [[ $1 = "format" ]]; then
     clang-format -i $(find . -name *.h -o -name *.c -o -name *.cpp)
 
 # Desktop build script
-elif [[ $1 == "desktop" ]]; then
+elif [[ $1 = "desktop" ]]; then
     mkdir -p desktop/build/desktop desktop/build/shared
 
     for file in $(find shared/src desktop/src -name *.c -o -name *.cpp); do
         name=${file%.*}
         ext=${file##*.}
-        if [[ ${file::6} == "shared" ]]; then module="shared"; else module="desktop"; fi
+        if [[ ${file::6} = "shared" ]]; then module="shared"; else module="desktop"; fi
         object="desktop/build/$module/${name:11}.o"
         folder=$(dirname ${name:11})
         if [[ "$folder" != "." ]]; then
@@ -31,7 +31,7 @@ elif [[ $1 == "desktop" ]]; then
         fi
 
         if [[ $file -nt $object ]]; then
-            if [[ $ext  == "c" ]]; then compiler="gcc"; else compiler="g++"; fi
+            if [[ $ext = "c" ]]; then compiler="gcc"; else compiler="g++"; fi
             if $compiler -c -DPLATFORM_DESKTOP -Ishared/include -Idesktop/include -Ofast $file -o $object $(pkg-config --cflags glfw3); then
                 echo $file
             else
@@ -53,7 +53,7 @@ elif [[ $1 == "desktop" ]]; then
 # Web build script
 else
     # Also build without WASM SIMD version
-    if [[ $1 == "release" ]]; then
+    if [[ $1 = "release" ]]; then
         rm -rf web/build/shared
         mkdir -p web/build/shared
 
@@ -77,9 +77,10 @@ else
         # Link final wasm bundle
         wasm-ld $(find web/build -name *.o) --no-entry --allow-undefined \
             -z,stack-size=$[256 * 1024] --export-table -o web/build/game.wasm
+
+        rm -rf web/build/shared
     fi
 
-    rm -rf web/build/shared
     mkdir -p web/build/shared
 
     # Build WASM SIMD version

@@ -23,6 +23,8 @@ void Texture_Free(void *data);
 
 extern "C" {
 
+    #define WASM_PAGE_SIZE 65536
+
     // C standard library bindings
     #define EXIT_SUCCESS 0
     #define EXIT_FAILURE 1

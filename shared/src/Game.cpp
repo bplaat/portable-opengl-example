@@ -107,11 +107,6 @@ void Game::init() {
     print(" on ");
     println((const char *)glGetString(GL_RENDERER));
 
-    // Grow heap with 2 * 64 KiB pages
-#ifdef PLATFORM_WEB
-    __builtin_wasm_memory_grow(0, 2);
-#endif
-
     // Create boxes
     boxesSize = 4 * 1024;
     boxes = (Box **)malloc(boxesSize * sizeof(Box *));
