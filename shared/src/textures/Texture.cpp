@@ -1,4 +1,5 @@
 #include "textures/Texture.h"
+#include "opengl.h"
 
 Texture::Texture(bool transparent, bool pixelated) : transparent(transparent), pixelated(pixelated), texture(0) {}
 

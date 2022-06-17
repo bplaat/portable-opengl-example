@@ -1,4 +1,5 @@
 #include "textures/TextTexture.h"
+#include "texture-loading.h"
 
 void TextTexture::renderCallback(void *ptr, int32_t width, int32_t height, void *data) {
     TextTexture *texture = (TextTexture *)ptr;

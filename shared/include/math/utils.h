@@ -1,8 +1,5 @@
-#ifndef UTILS_H
-#define UTILS_H
+#pragma once
 
 float degrees(float radians);
 
 float radians(float degrees);
-
-#endif

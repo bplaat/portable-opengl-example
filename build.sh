@@ -18,14 +18,20 @@ elif [[ $1 = "format" ]]; then
 
 # Desktop build script
 elif [[ $1 = "desktop" ]]; then
-    mkdir -p desktop/build/desktop desktop/build/shared
+    mkdir -p desktop/build/shared desktop/build/desktop
 
     for file in $(find shared/src desktop/src -name *.c -o -name *.cpp); do
         name=${file%.*}
         ext=${file##*.}
-        if [[ ${file::6} = "shared" ]]; then module="shared"; else module="desktop"; fi
-        object="desktop/build/$module/${name:11}.o"
-        folder=$(dirname ${name:11})
+        if [[ ${file::6} = "shared" ]]; then
+            module="shared"
+            object="desktop/build/$module/${name:11}.o"
+            folder=$(dirname ${name:11})
+        else
+            module="desktop"
+            object="desktop/build/$module/${name:12}.o"
+            folder=$(dirname ${name:12})
+        fi
         if [[ "$folder" != "." ]]; then
             mkdir -p "desktop/build/$module/$folder"
         fi
@@ -54,19 +60,28 @@ elif [[ $1 = "desktop" ]]; then
 else
     # Also build without WASM SIMD version
     if [[ $1 = "release" ]]; then
-        rm -rf web/build/shared
-        mkdir -p web/build/shared
+        rm -rf web/build/shared web/build/web
+        mkdir -p web/build/shared web/build/web
 
-        for file in $(find shared/src -name *.cpp); do
+        for file in $(find shared/src web/src -name *.c -o -name *.cpp); do
             name=${file%.*}
-            object="web/build/shared/${name:11}.o"
-            folder=$(dirname ${name:11})
+            ext=${file##*.}
+            if [[ ${file::3} = "web" ]]; then
+                module="web"
+                object="web/build/$module/${name:8}.o"
+                folder=$(dirname ${name:8})
+            else
+                module="shared"
+                object="web/build/$module/${name:11}.o"
+                folder=$(dirname ${name:11})
+            fi
             if [[ "$folder" != "." ]]; then
-                mkdir -p "web/build/shared/$folder"
+                mkdir -p "web/build/$module/$folder"
             fi
 
             if [[ $file -nt $object ]]; then
-                if clang -c -DPLATFORM_WEB -Ishared/include -Os --target=wasm32 $file -o $object; then
+                if [[ $ext = "c" ]]; then compiler="clang"; else compiler="clang++"; fi
+                if $compiler -c -DPLATFORM_WEB -Ishared/include -Iweb/include -Os --target=wasm32 $file -o $object; then
                     echo $file
                 else
                     exit
@@ -78,22 +93,31 @@ else
         wasm-ld $(find web/build -name *.o) --no-entry --allow-undefined \
             -z,stack-size=$[256 * 1024] --export-table -o web/build/game.wasm
 
-        rm -rf web/build/shared
+        rm -rf web/build/shared web/build/web
     fi
 
-    mkdir -p web/build/shared
+    mkdir -p web/build/shared web/build/web
 
     # Build WASM SIMD version
-    for file in $(find shared/src -name *.cpp); do
+    for file in $(find shared/src web/src -name *.c -o -name *.cpp); do
         name=${file%.*}
-        object="web/build/shared/${name:11}.o"
-        folder=$(dirname ${name:11})
+        ext=${file##*.}
+        if [[ ${file::3} = "web" ]]; then
+            module="web"
+            object="web/build/$module/${name:8}.o"
+            folder=$(dirname ${name:8})
+        else
+            module="shared"
+            object="web/build/$module/${name:11}.o"
+            folder=$(dirname ${name:11})
+        fi
         if [[ "$folder" != "." ]]; then
-            mkdir -p "web/build/shared/$folder"
+            mkdir -p "web/build/$module/$folder"
         fi
 
         if [[ $file -nt $object ]]; then
-            if clang -c -DPLATFORM_WEB -Ishared/include -Os --target=wasm32 -msimd128 $file -o $object; then
+            if [[ $ext = "c" ]]; then compiler="clang"; else compiler="clang++"; fi
+            if $compiler -c -DPLATFORM_WEB -Ishared/include -Iweb/include -Os --target=wasm32 -msimd128 $file -o $object; then
                 echo $file
             else
                 exit

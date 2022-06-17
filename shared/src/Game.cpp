@@ -1,6 +1,7 @@
 #include "Game.h"
-#include "bindings.h"
 #include "math/utils.h"
+#include "opengl.h"
+#include "std.h"
 
 #ifdef PLATFORM_WEB
 const char *vertexShaderSource = "#version 300 es\n"

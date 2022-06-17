@@ -1,5 +1,4 @@
-#ifndef MATRIX4_H
-#define MATRIX4_H
+#pragma once
 
 struct __attribute__((aligned(16))) Matrix4 {
     float elements[16];
@@ -24,5 +23,3 @@ struct __attribute__((aligned(16))) Matrix4 {
 
     Matrix4 &operator*=(Matrix4 const &rhs);
 };
-
-#endif

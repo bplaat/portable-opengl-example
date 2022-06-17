@@ -1,7 +1,7 @@
-#ifndef TEXTURE_H
-#define TEXTURE_H
+#pragma once
 
-#include "bindings.h"
+#include <stdbool.h>
+#include <stdint.h>
 
 class Texture {
   public:
@@ -17,5 +17,3 @@ class Texture {
 
     ~Texture();
 };
-
-#endif

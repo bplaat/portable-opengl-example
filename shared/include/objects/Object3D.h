@@ -1,5 +1,4 @@
-#ifndef OBJECT3D_H
-#define OBJECT3D_H
+#pragma once
 
 #include "math/Matrix4.h"
 #include "math/Vector4.h"
@@ -15,5 +14,3 @@ class Object3D {
 
     void updateMatrix();
 };
-
-#endif

@@ -1,6 +1,4 @@
-#ifndef RANDOM_H
-#define RANDOM_H
-
+#pragma once
 #include <stdint.h>
 
 class Random {
@@ -15,5 +13,3 @@ class Random {
 
     int32_t randInt(int32_t min, int32_t max);
 };
-
-#endif

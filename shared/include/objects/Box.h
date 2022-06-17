@@ -1,5 +1,4 @@
-#ifndef BOX_H
-#define BOX_H
+#pragma once
 
 #include "math/Random.h"
 #include <stdint.h>
@@ -21,5 +20,3 @@ class Box {
 
     void render();
 };
-
-#endif

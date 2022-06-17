@@ -1,4 +1,6 @@
 #include "textures/AssetTexture.h"
+#include "std.h"
+#include "texture-loading.h"
 
 void AssetTexture::loadCallback(void *ptr, int32_t width, int32_t height, void *data) {
     AssetTexture *texture = (AssetTexture *)ptr;

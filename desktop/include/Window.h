@@ -1,5 +1,4 @@
-#ifndef WINDOW_H
-#define WINDOW_H
+#pragma once
 
 #include "glad/glad.h"
 #include <GLFW/glfw3.h>
@@ -35,5 +34,3 @@ class Window {
 
     void present();
 };
-
-#endif

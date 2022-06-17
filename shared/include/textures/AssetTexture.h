@@ -1,5 +1,4 @@
-#ifndef ASSET_TEXTURE_H
-#define ASSET_TEXTURE_H
+#pragma once
 
 #include "textures/Texture.h"
 
@@ -11,5 +10,3 @@ class AssetTexture : public Texture {
 
     AssetTexture(const char *path, bool transparent, bool pixelated);
 };
-
-#endif

@@ -1,5 +1,5 @@
 #include "math/Random.h"
-#include "bindings.h"
+#include "std.h"
 
 Random::Random() : seed(1) {}
 

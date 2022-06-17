@@ -1,5 +1,4 @@
-#ifndef GAME_H
-#define GAME_H
+#pragma once
 
 #include <stddef.h>
 #include <stdint.h>
@@ -43,5 +42,3 @@ class Game {
 
     void render();
 };
-
-#endif

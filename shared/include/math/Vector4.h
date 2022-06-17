@@ -1,5 +1,4 @@
-#ifndef VECTOR4_H
-#define VECTOR4_H
+#pragma once
 
 #include "math/Matrix4.h"
 
@@ -33,5 +32,3 @@ struct __attribute__((aligned(16))) Vector4 {
 
     Vector4 &operator*=(Matrix4 const &rhs);
 };
-
-#endif

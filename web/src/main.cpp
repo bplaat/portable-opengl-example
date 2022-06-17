@@ -1,7 +1,5 @@
 #include "Game.h"
 
-#ifdef PLATFORM_WEB
-
 __attribute__((export_name("init"))) void init() {
     Game::getInstance()->init();
 }
@@ -17,5 +15,3 @@ __attribute__((export_name("update"))) void update(float delta) {
 __attribute__((export_name("render"))) void render() {
     Game::getInstance()->render();
 }
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef TEXT_TEXTURE_H
-#define TEXT_TEXTURE_H
+#pragma once
 
 #include "Font.h"
 #include "textures/Texture.h"
@@ -15,5 +14,3 @@ class TextTexture : public Texture {
 
     TextTexture(const char *text, Font *font, uint32_t size, uint32_t color);
 };
-
-#endif
