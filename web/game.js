@@ -52,12 +52,13 @@ function renderText(text, fontName, size, color) {
 
 let running = true, printBuffer = '';
 const bindings = {
+    // C standard library bindings
     printf(format, ptr) {
         const formatString = readString(format);
         const buffer = new Uint32Array(instance.exports.memory.buffer, ptr);
         const params = Array.from(formatString.matchAll(/%[0-9]*[s|d]/ig)).map(type => type[0]).map((type, index) => {
-            if (type[type.length - 1] == 'd') return buffer[index];
             if (type[type.length - 1] == 's')  return readString(buffer[index]);
+            if (type[type.length - 1] == 'd') return buffer[index];
         });
         console.log.call(undefined, formatString, ...params);
     },
@@ -72,6 +73,7 @@ const bindings = {
         return Math.floor(Date.now() / 1000);
     },
 
+    // OpenGL ES 3.0 bindings
     glGetString(name) {
         const string = gl.getParameter(name);
         const stringPtr = instance.exports.malloc(string.length + 1);
@@ -196,6 +198,7 @@ const bindings = {
         }
     },
 
+    // Custom texture bindings
     Texture_Load(path, ptr, callback) {
         const image = new Image();
         image.src = `build/${readString(path)}`;

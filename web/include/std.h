@@ -23,6 +23,6 @@ void *malloc(size_t size);
 void free(void *ptr);
 }
 
-// C++ standard library bindings
+// C++ standard library wrappers
 void *operator new(size_t size);
 void operator delete(void *ptr) noexcept;
