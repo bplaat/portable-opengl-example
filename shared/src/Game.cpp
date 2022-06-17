@@ -1,4 +1,5 @@
 #include "Game.h"
+#include "Log.h"
 #include "math/utils.h"
 #include "opengl.h"
 #include "std.h"
@@ -99,10 +100,10 @@ void Game::init() {
 
     // Print OpenGL version info
 #ifdef PLATFORM_DESKTOP
-    printf("[INFO] Using OpenGL %s on %s\n", glGetString(GL_VERSION), glGetString(GL_RENDERER));
+    Log::info("Using OpenGL %s on %s", glGetString(GL_VERSION), glGetString(GL_RENDERER));
 #endif
 #ifdef PLATFORM_WEB
-    printf("[INFO] Using %s on %s\n", glGetString(GL_VERSION), glGetString(GL_RENDERER));
+    Log::info("Using %s on %s", glGetString(GL_VERSION), glGetString(GL_RENDERER));
 #endif
 
     // Create boxes
@@ -121,8 +122,7 @@ void Game::init() {
     if (!success) {
         char infoLog[512];
         glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        printf("[ERROR] Can't compile vertex shader: %s\n", infoLog);
-        exit(EXIT_FAILURE);
+        Log::error("Can't compile vertex shader: %s", infoLog);
         return;
     }
 
@@ -134,8 +134,7 @@ void Game::init() {
     if (!success) {
         char infoLog[512];
         glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-        printf("[ERROR] Can't compile fragment shader: %s\n", infoLog);
-        exit(EXIT_FAILURE);
+        Log::error("Can't compile fragment shader: %s", infoLog);
         return;
     }
 

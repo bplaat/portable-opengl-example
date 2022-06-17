@@ -1,12 +1,12 @@
 #include "utils.h"
+#include "Log.h"
 #include <stdio.h>
 #include <stdlib.h>
 
 uint8_t *fileRead(const char *path) {
     FILE *file = fopen(path, "rb");
     if (file == NULL) {
-        printf("[ERROR] Can't load file: %s\n", path);
-        exit(EXIT_FAILURE);
+        Log::error("Can't load file: %s", path);
     }
     fseek(file, 0, SEEK_END);
     size_t fileSize = ftell(file);

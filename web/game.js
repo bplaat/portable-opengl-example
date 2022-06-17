@@ -51,19 +51,35 @@ function renderText(text, fontName, size, color) {
 }
 
 let running = true, printBuffer = '';
+function printString(string) {
+    printBuffer += string;
+    if (printBuffer[printBuffer.length - 1] == '\n') {
+        console.log(printBuffer);
+        printBuffer = '';
+    }
+}
+
 const bindings = {
     // C standard library bindings
     printf(format, ptr) {
         const formatString = readString(format);
         const buffer = new Uint32Array(instance.exports.memory.buffer, ptr);
-        const params = Array.from(formatString.matchAll(/%[0-9]*[s|d]/ig)).map(type => type[0]).map((type, index) => {
-            if (type[type.length - 1] == 's')  return readString(buffer[index]);
-            if (type[type.length - 1] == 'd') return buffer[index];
+        let index = 0;
+        const string = formatString.replace(/%[0-9]*[s|d]/ig, type => {
+            if (type[type.length - 1] == 's')  return readString(buffer[index++]);
+            if (type[type.length - 1] == 'd') return buffer[index++];
         });
-        console.log.call(undefined, formatString, ...params);
+        printString(string);
+        return string.length;
+    },
+    vprintf(format, ptr) {
+        return bindings.printf(format, ptr);
+    },
+    putchar(char) {
+        printString(textDecoder.decode(new Uint8Array([ char ])));
     },
     exit(status) {
-        console.log(`Exited with status ${status}`);
+        printString(`Exited with status ${status}\n`);
         running = false;
     },
     sin: Math.sin,

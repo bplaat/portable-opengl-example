@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdarg.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -10,7 +11,8 @@
 #define M_PI 3.14159265358979323846
 
 extern "C" {
-extern void printf(const char *format, ...);
+extern int32_t printf(const char *format, ...);
+extern int32_t vprintf(const char *format, va_list arg);
 extern void exit(int32_t status);
 extern double floor(double x);
 extern double sin(double x);

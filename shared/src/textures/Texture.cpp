@@ -1,4 +1,5 @@
 #include "textures/Texture.h"
+#include "Log.h"
 #include "opengl.h"
 #include "std.h"
 #include "texture-loading.h"
@@ -6,7 +7,7 @@
 void Texture::loadCallback(void *ptr, int32_t width, int32_t height, void *data) {
     Texture *texture = (Texture *)ptr;
     if (data == NULL) {
-        printf("[ERROR] Can't load texture file: %s\n", texture->path);
+        Log::error("Can't load texture file: %s", texture->path);
     }
     texture->createTexture(width, height, data);
     Texture_Free(data);

@@ -38,7 +38,7 @@ elif [[ $1 = "desktop" ]]; then
 
         if [[ $file -nt $object ]]; then
             if [[ $ext = "c" ]]; then compiler="gcc"; else compiler="g++"; fi
-            if $compiler -c -DPLATFORM_DESKTOP -Ishared/include -Idesktop/include -Ofast $file -o $object $(pkg-config --cflags glfw3); then
+            if $compiler -c -DDEBUG -DPLATFORM_DESKTOP -Ishared/include -Idesktop/include -Ofast $file -o $object $(pkg-config --cflags glfw3); then
                 echo $file
             else
                 exit
@@ -81,7 +81,7 @@ else
 
             if [[ $file -nt $object ]]; then
                 if [[ $ext = "c" ]]; then compiler="clang"; else compiler="clang++"; fi
-                if $compiler -c -DPLATFORM_WEB -Ishared/include -Iweb/include -Os --target=wasm32 $file -o $object; then
+                if $compiler -c -DDEBUG -DPLATFORM_WEB -Ishared/include -Iweb/include -Os --target=wasm32 $file -o $object; then
                     echo $file
                 else
                     exit
@@ -117,7 +117,7 @@ else
 
         if [[ $file -nt $object ]]; then
             if [[ $ext = "c" ]]; then compiler="clang"; else compiler="clang++"; fi
-            if $compiler -c -DPLATFORM_WEB -Ishared/include -Iweb/include -Os --target=wasm32 -msimd128 $file -o $object; then
+            if $compiler -c -DDEBUG -DPLATFORM_WEB -Ishared/include -Iweb/include -Os --target=wasm32 -msimd128 $file -o $object; then
                 echo $file
             else
                 exit

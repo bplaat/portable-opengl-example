@@ -1,4 +1,5 @@
 #include "Font.h"
+#include "Log.h"
 #ifdef PLATFORM_DESKTOP
     #include "utils.h"
 #endif
@@ -10,8 +11,7 @@ Font::Font(const char *path) : path(path) {
     fontData = fileRead(path);
 
     if (stbtt_InitFont(&fontInfo, fontData, stbtt_GetFontOffsetForIndex(fontData, 0)) == 0) {
-        printf("[ERROR] Can't load font file: %s", path);
-        exit(EXIT_FAILURE);
+        Log::error("Can't load font file: %s", path);
     }
 #endif
 }
