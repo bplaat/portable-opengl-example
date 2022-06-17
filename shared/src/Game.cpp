@@ -4,35 +4,37 @@
 #include "opengl.h"
 #include "std.h"
 
+const char *vertexShaderSource =
 #ifdef PLATFORM_WEB
-const char *vertexShaderSource = "#version 300 es\n"
+    "#version 300 es\n"
 #endif
 #ifdef PLATFORM_DESKTOP
-    const char *vertexShaderSource = "#version 330 core\n"
+    "#version 330 core\n"
 #endif
-                                     "in vec4 a_position;\n"
-                                     "in vec2 a_texture_position;\n"
-                                     "uniform mat4 u_matrix;\n"
-                                     "uniform mat4 u_camera;\n"
-                                     "out vec2 v_texture_position;\n"
-                                     "void main() {\n"
-                                     "    gl_Position = u_camera * u_matrix * a_position;\n"
-                                     "    v_texture_position = a_texture_position;\n"
-                                     "}";
+    "in vec4 a_position;\n"
+    "in vec2 a_texture_position;\n"
+    "uniform mat4 u_matrix;\n"
+    "uniform mat4 u_camera;\n"
+    "out vec2 v_texture_position;\n"
+    "void main() {\n"
+    "    gl_Position = u_camera * u_matrix * a_position;\n"
+    "    v_texture_position = a_texture_position;\n"
+    "}";
 
+const char *fragmentShaderSource =
 #ifdef PLATFORM_WEB
-const char *fragmentShaderSource = "#version 300 es\n"
+    "#version 300 es\n"
 #endif
 #ifdef PLATFORM_DESKTOP
-    const char *fragmentShaderSource = "#version 330 core\n"
+    "#version 330 core\n"
 #endif
-                                       "precision highp float;\n"
-                                       "uniform sampler2D u_texture;\n"
-                                       "in vec2 v_texture_position;\n"
-                                       "out vec4 o_color;\n"
-                                       "void main() {\n"
-                                       "    o_color = texture(u_texture, v_texture_position);\n"
-                                       "}";
+    "precision highp float;\n"
+    "uniform sampler2D u_texture;\n"
+    "in vec2 v_texture_position;\n"
+    "out vec4 o_color;\n"
+    "void main() {\n"
+    "    o_color = texture(u_texture, v_texture_position);\n"
+    "}";
 
 float planeVertices[] = {
     // Vertex position, Texture position
@@ -199,12 +201,12 @@ void Game::init() {
     glEnableVertexAttribArray(texturePositionLocation);
 
     // Load fonts
-    textFont = new Font("assets/fonts/PressStart2P-Regular.ttf");
+    textFont = Font::loadFromFile("assets/fonts/PressStart2P-Regular.ttf");
 
     // Load textures
-    crateTexture = Texture::fromFile("assets/textures/crate.jpg", false, false);
-    treeTexture = Texture::fromFile("assets/textures/tree.png", true, false);
-    textTexture = new TextTexture("Wasm WebGL Example!!!", textFont, 32, 0x0000ff);
+    crateTexture = Texture::loadFromFile("assets/textures/crate.jpg", false, false);
+    treeTexture = Texture::loadFromFile("assets/textures/tree.png", true, false);
+    textTexture = NULL;
 
     // Create camera
     camera = new PerspectiveCamera(radians(75), (float)width / (float)height, 0.1, 1000);
@@ -226,6 +228,11 @@ void Game::resize(int32_t width, int32_t height, float scale) {
 }
 
 void Game::update(float delta) {
+    // Create text texture when font is loaded
+    if (textFont->loaded && textTexture == NULL) {
+        textTexture = TextTexture::fromText("Wasm WebGL Example!!!", textFont, 32, 0x0000ff);
+    }
+
     // Update boxes
     for (int32_t i = 0; i < boxesSize; i++) {
         Box *box = boxes[i];
@@ -254,48 +261,53 @@ void Game::render() {
     glUseProgram(program);
     glBindVertexArray(cubeVertrexArray);
     glUniformMatrix4fv(cameraUniform, 1, GL_FALSE, &camera->matrix.elements[0]);
-    glBindTexture(GL_TEXTURE_2D, crateTexture->texture);
+    if (crateTexture->loaded) {
+        glBindTexture(GL_TEXTURE_2D, crateTexture->texture);
 
-    Object3D plane;
-    plane.rotation.x = rotation;
-    plane.rotation.y = rotation;
-    plane.updateMatrix();
-    glUniformMatrix4fv(matrixUniform, 1, GL_FALSE, &plane.matrix.elements[0]);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+        Object3D plane;
+        plane.rotation.x = rotation;
+        plane.rotation.y = rotation;
+        plane.updateMatrix();
+        glUniformMatrix4fv(matrixUniform, 1, GL_FALSE, &plane.matrix.elements[0]);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
 
-    plane.position.x = -1.75;
-    plane.updateMatrix();
-    glUniformMatrix4fv(matrixUniform, 1, GL_FALSE, &plane.matrix.elements[0]);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+        plane.position.x = -1.75;
+        plane.updateMatrix();
+        glUniformMatrix4fv(matrixUniform, 1, GL_FALSE, &plane.matrix.elements[0]);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
 
-    plane.position.x = 1.75;
-    plane.updateMatrix();
-    glUniformMatrix4fv(matrixUniform, 1, GL_FALSE, &plane.matrix.elements[0]);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+        plane.position.x = 1.75;
+        plane.updateMatrix();
+        glUniformMatrix4fv(matrixUniform, 1, GL_FALSE, &plane.matrix.elements[0]);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+    }
 
     // Draw tree
     glBindVertexArray(planeVertrexArray);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
+    if (treeTexture->loaded) {
+        Matrix4 cameraMatrix;
+        cameraMatrix.flat(width, height);
+        glUniformMatrix4fv(cameraUniform, 1, GL_FALSE, &cameraMatrix.elements[0]);
 
-    Matrix4 cameraMatrix;
-    cameraMatrix.flat(width, height);
-    glUniformMatrix4fv(cameraUniform, 1, GL_FALSE, &cameraMatrix.elements[0]);
+        Matrix4 treePlaneMatrix;
+        treePlaneMatrix.rect(16, 16, 256, 256);
+        glUniformMatrix4fv(matrixUniform, 1, GL_FALSE, &treePlaneMatrix.elements[0]);
 
-    Matrix4 treePlaneMatrix;
-    treePlaneMatrix.rect(16, 16, 256, 256);
-    glUniformMatrix4fv(matrixUniform, 1, GL_FALSE, &treePlaneMatrix.elements[0]);
-
-    glBindTexture(GL_TEXTURE_2D, treeTexture->texture);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
+        glBindTexture(GL_TEXTURE_2D, treeTexture->texture);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+    }
 
     // Draw text
-    Matrix4 textPlaneMatrix;
-    textPlaneMatrix.rect(16 + 256 + 32, 16 + (256 - textTexture->height) / 2, textTexture->width, textTexture->height);
-    glUniformMatrix4fv(matrixUniform, 1, GL_FALSE, &textPlaneMatrix.elements[0]);
+    if (textTexture != NULL && textTexture->loaded) {
+        Matrix4 textPlaneMatrix;
+        textPlaneMatrix.rect(16 + 256 + 32, 16 + (256 - textTexture->height) / 2, textTexture->width,
+                             textTexture->height);
+        glUniformMatrix4fv(matrixUniform, 1, GL_FALSE, &textPlaneMatrix.elements[0]);
 
-    glBindTexture(GL_TEXTURE_2D, textTexture->texture);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-
+        glBindTexture(GL_TEXTURE_2D, textTexture->texture);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+    }
     glDisable(GL_BLEND);
 }

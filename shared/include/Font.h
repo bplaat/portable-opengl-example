@@ -1,7 +1,6 @@
 #pragma once
 
-#include "std.h"
-
+#include <stdint.h>
 #ifdef PLATFORM_DESKTOP
     #include "stb_truetype/stb_truetype.h"
 #endif
@@ -9,17 +8,34 @@
 class Font {
   public:
     const char *path;
-
 #ifdef PLATFORM_DESKTOP
     uint8_t *fontData;
     stbtt_fontinfo fontInfo;
 #endif
+#ifdef PLATFORM_WEB
+    uint32_t fontFace;
+#endif
+    bool loaded;
 
-    Font(const char *path);
+#ifdef PLATFORM_WEB
+    static void loadCallback(Font *font, uint32_t fontFace);
+#endif
 
-#ifdef PLATFORM_DESKTOP
+    static Font *loadFromFile(const char *path);
+
     int32_t measureText(const char *text, uint32_t size);
 
-    uint8_t *renderText(const char *text, uint32_t size, uint32_t color, int32_t *bitmapWidth, int32_t *bitmapHeight);
-#endif
+    void *renderText(const char *text, uint32_t size, uint32_t color, int32_t *bitmapWidth, int32_t *bitmapHeight);
+
+  private:
+    Font(const char *path);
 };
+
+// Custom font bindings
+#ifdef PLATFORM_WEB
+extern "C" void Font_Load(Font *font, const char *path, void (*callback)(Font *font, uint32_t fontFace));
+extern "C" int32_t Font_MeasureText(uint32_t fontFace, const char *text, uint32_t size);
+extern "C" void *Font_RenderText(uint32_t fontFace, const char *text, uint32_t size, uint32_t color,
+                                 int32_t *bitmapWidth, int32_t *bitmapHeight);
+extern "C" void Font_Free(uint32_t fontFace);
+#endif

@@ -10,7 +10,8 @@ class TextTexture : public Texture {
     uint32_t size;
     uint32_t color;
 
-    static void renderCallback(void *ptr, int32_t width, int32_t height, void *data);
+    static TextTexture *fromText(const char *text, Font *font, uint32_t size, uint32_t color);
 
+  private:
     TextTexture(const char *text, Font *font, uint32_t size, uint32_t color);
 };

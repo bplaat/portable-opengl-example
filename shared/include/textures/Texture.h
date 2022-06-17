@@ -11,14 +11,26 @@ class Texture {
     bool transparent;
     bool pixelated;
     uint32_t texture;
+    bool loaded;
 
-    static void loadCallback(void *ptr, int32_t width, int32_t height, void *data);
+#ifdef PLATFORM_WEB
+    static void loadCallback(Texture *texture, int32_t width, int32_t height, void *data);
+#endif
 
-    static Texture *fromFile(const char *path, bool transparent, bool pixelated);
+    static Texture *loadFromFile(const char *path, bool transparent, bool pixelated);
 
+  protected:
     Texture(bool transparent, bool pixelated);
 
-    void createTexture(int32_t width, int32_t height, void *data);
+  public:
+    void create(int32_t width, int32_t height, void *data);
 
     ~Texture();
 };
+
+// Custom texture bindings
+#ifdef PLATFORM_WEB
+extern "C" void Texture_Load(Texture *texture, const char *path,
+                             void (*callback)(Texture *texture, int32_t width, int32_t height, void *data));
+extern "C" void Texture_Free(void *data);
+#endif

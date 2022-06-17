@@ -1,31 +1,15 @@
 #include "textures/Texture.h"
 #include "Log.h"
 #include "opengl.h"
-#include "std.h"
-#include "texture-loading.h"
-
-void Texture::loadCallback(void *ptr, int32_t width, int32_t height, void *data) {
-    Texture *texture = (Texture *)ptr;
-    if (data == NULL) {
-        Log::error("Can't load texture file: %s", texture->path);
-    }
-    texture->createTexture(width, height, data);
-    Texture_Free(data);
-}
-
-Texture *Texture::fromFile(const char *path, bool transparent, bool pixelated) {
-    Texture *texture = new Texture(transparent, pixelated);
-    texture->path = path;
-    Texture_Load(path, texture, Texture::loadCallback);
-    return texture;
-}
+#include <stddef.h>
 
 Texture::Texture(bool transparent, bool pixelated)
-    : path(NULL), transparent(transparent), pixelated(pixelated), texture(0) {}
+    : path(NULL), transparent(transparent), pixelated(pixelated), texture(0), loaded(false) {}
 
-void Texture::createTexture(int32_t width, int32_t height, void *data) {
+void Texture::create(int32_t width, int32_t height, void *data) {
     this->width = width;
     this->height = height;
+    loaded = true;
 
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);

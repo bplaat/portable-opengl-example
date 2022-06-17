@@ -18,10 +18,12 @@ void Box::update(float delta) {
     x += vx * delta;
     y += vy * delta;
     Game *game = Game::getInstance();
-    if (x < 0 || x + width > game->width)
+    if (x < 0 || x + width > game->width) {
         vx = -vx;
-    if (y < 0 || y + height > game->height)
+    }
+    if (y < 0 || y + height > game->height) {
         vy = -vy;
+    }
 }
 
 void Box::render() {

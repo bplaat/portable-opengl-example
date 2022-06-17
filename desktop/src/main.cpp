@@ -1,8 +1,7 @@
 #include "Game.h"
 #include "Window.h"
 #include <stdlib.h>
-
-#define MIN(a, b) ((a) < (b) ? (a) : (b))
+#include "utils.h"
 
 void onResizeListener(int32_t width, int32_t height, float scale) {
     Game::getInstance()->resize(width, height, scale);

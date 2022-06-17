@@ -33,23 +33,6 @@ function wrap(thing) {
     return wrapper;
 }
 
-const fonts = {};
-function renderText(text, fontName, size, color) {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-
-    const textString = readString(text);
-    ctx.font = size + 'px ' + fontName;
-    canvas.width = ctx.measureText(textString).width;
-    canvas.height = size;
-
-    ctx.font = size + 'px ' + fontName;
-    ctx.textBaseline = 'top';
-    ctx.fillStyle = `rgb(${color & 255}, ${(color >> 8) & 255}, ${(color >> 16) & 255})`;
-    ctx.fillText(textString, 0, 0);
-    return canvas;
-}
-
 let printBuffer = '';
 function printString(string) {
     printBuffer += string;
@@ -217,35 +200,60 @@ const bindings = {
         }
     },
 
+    // Custom font bindings
+    Font_Load(font, path, callback) {
+        const fontPath = readString(path);
+        const fontPathParts = fontPath.split('/');
+        const fontName = fontPathParts[fontPathParts.length - 1].split('.')[0];
+        new FontFace(fontName, `url(build/${fontPath})`).load().then(fontFace => {
+            document.fonts.add(fontFace);
+            instance.exports.__indirect_function_table.get(callback)(font, wrap(fontFace));
+        }).catch(reason => {
+            instance.exports.__indirect_function_table.get(callback)(font, 0);
+        });
+    },
+    Font_MeasureText(fontFace, text, size) {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const textString = readString(text);
+        ctx.font = size + 'px ' + wrappers[fontFace].family;
+        return ctx.measureText(textString).width;
+    },
+    Font_RenderText(fontFace, text, size, color, bitmapWidth, bitmapHeight) {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const textString = readString(text);
+        ctx.font = size + 'px ' + wrappers[fontFace].family;
+        canvas.width = ctx.measureText(textString).width;
+        canvas.height = size;
+
+        ctx.font = size + 'px ' + wrappers[fontFace].family;
+        ctx.textBaseline = 'top';
+        ctx.fillStyle = `rgb(${color & 255}, ${(color >> 8) & 255}, ${(color >> 16) & 255})`;
+        ctx.fillText(textString, 0, 0);
+
+        const bitmapWidthBuffer = new Uint32Array(instance.exports.memory.buffer, bitmapWidth, 1);
+        bitmapWidthBuffer[0] = canvas.width;
+        const bitmapHeightBuffer = new Uint32Array(instance.exports.memory.buffer, bitmapHeight, 1);
+        bitmapHeightBuffer[0] = canvas.height;
+        return wrap(canvas);
+    },
+    Font_Free(fontFace) {
+        wrappers[fontFace] = undefined;
+    },
+
     // Custom texture bindings
-    Texture_Load(path, ptr, callback) {
+    Texture_Load(texture, path, callback) {
         const image = new Image();
         image.src = `build/${readString(path)}`;
         image.onload = () => {
-            instance.exports.__indirect_function_table.get(callback)(ptr, image.width, image.height, wrap(image));
+            instance.exports.__indirect_function_table.get(callback)(texture, image.width, image.height, wrap(image));
+        };
+        image.onerror = () => {
+            instance.exports.__indirect_function_table.get(callback)(texture, 0, 0, 0);
         };
     },
     Texture_Free(data) {
-        wrappers[data] = undefined;
-    },
-    TextTexture_Render(text, font, size, color, ptr, callback) {
-        const fontPathPtr = new Uint32Array(instance.exports.memory.buffer, font, 1)[0];
-        const fontPath = readString(fontPathPtr);
-        const fontPathParts = fontPath.split('/');
-        const fontName = fontPathParts[fontPathParts.length - 1].split('.')[0];
-        if (!(fontName in fonts)) {
-            fonts[fontName] = new FontFace(fontName, `url(build/${fontPath})`);
-            fonts[fontName].load().then(font => {
-                document.fonts.add(font);
-                const canvas = renderText(text, fontName, size, color);
-                instance.exports.__indirect_function_table.get(callback)(ptr, canvas.width, canvas.height, wrap(canvas));
-            });
-        } else {
-            const canvas = renderText(text, fontName, size, color);
-            instance.exports.__indirect_function_table.get(callback)(ptr, canvas.width, canvas.height, wrap(canvas));
-        }
-    },
-    TextTexture_Free(data) {
         wrappers[data] = undefined;
     }
 };
