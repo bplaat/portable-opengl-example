@@ -142,13 +142,13 @@ const bindings = {
         gl.uniformMatrix4fv(wrappers[location], transpose, new Float32Array(instance.exports.memory.buffer, value, 16));
     },
     glGetAttribLocation(program, name) {
-        return wrap(gl.getAttribLocation(wrappers[program], readString(name)));
+        return gl.getAttribLocation(wrappers[program], readString(name));
     },
     glVertexAttribPointer(index, size, type, normalized, stride, pointer) {
-        gl.vertexAttribPointer(wrappers[index], size, type, normalized, stride, pointer);
+        gl.vertexAttribPointer(index, size, type, normalized, stride, pointer);
     },
     glEnableVertexAttribArray(index) {
-        gl.enableVertexAttribArray(wrappers[index]);
+        gl.enableVertexAttribArray(index);
     },
     glDrawArrays(mode, first, count) {
         gl.drawArrays(mode, first, count);
