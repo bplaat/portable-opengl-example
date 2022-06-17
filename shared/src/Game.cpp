@@ -98,12 +98,22 @@ Game *Game::getInstance() {
 void Game::init() {
     random = new Random(time(NULL));
 
-    // Print OpenGL version info
+    // Print OpenGL version and SIMD info
 #ifdef PLATFORM_DESKTOP
     Log::info("Using OpenGL %s on %s", glGetString(GL_VERSION), glGetString(GL_RENDERER));
+    #ifdef __ARM_NEON__
+    Log::info("Using ARM NEON SIMD");
+    #endif
+    #ifdef __SSE2__
+    Log::info("Using X86 SSE2 SIMD");
+    #endif
 #endif
+
 #ifdef PLATFORM_WEB
     Log::info("Using %s on %s", glGetString(GL_VERSION), glGetString(GL_RENDERER));
+    #ifdef __WASM_SIMD__
+    Log::info("Using WebAssembly SIMD");
+    #endif
 #endif
 
     // Create boxes

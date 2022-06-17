@@ -117,7 +117,7 @@ else
 
         if [[ $file -nt $object ]]; then
             if [[ $ext = "c" ]]; then compiler="clang"; else compiler="clang++"; fi
-            if $compiler -c -DDEBUG -DPLATFORM_WEB -Ishared/include -Iweb/include -Os --target=wasm32 -msimd128 $file -o $object; then
+            if $compiler -c -DDEBUG -DPLATFORM_WEB -D__WASM_SIMD__ -Ishared/include -Iweb/include -Os --target=wasm32 -msimd128 $file -o $object; then
                 echo $file
             else
                 exit

@@ -50,7 +50,7 @@ function renderText(text, fontName, size, color) {
     return canvas;
 }
 
-let running = true, printBuffer = '';
+let printBuffer = '';
 function printString(string) {
     printBuffer += string;
     if (printBuffer[printBuffer.length - 1] == '\n') {
@@ -58,25 +58,28 @@ function printString(string) {
         printBuffer = '';
     }
 }
+function printf(format, ptr) {
+    const formatString = readString(format);
+    const buffer = new Uint32Array(instance.exports.memory.buffer, ptr);
+    let index = 0;
+    const string = formatString.replace(/%[0-9]*[s|d]/ig, type => {
+        if (type[type.length - 1] == 's')  return readString(buffer[index++]);
+        if (type[type.length - 1] == 'd') return buffer[index++];
+    });
+    printString(string);
+    return string.length;
+}
 
+let running = true;
 const bindings = {
     // C standard library bindings
-    printf(format, ptr) {
-        const formatString = readString(format);
-        const buffer = new Uint32Array(instance.exports.memory.buffer, ptr);
-        let index = 0;
-        const string = formatString.replace(/%[0-9]*[s|d]/ig, type => {
-            if (type[type.length - 1] == 's')  return readString(buffer[index++]);
-            if (type[type.length - 1] == 'd') return buffer[index++];
-        });
-        printString(string);
-        return string.length;
-    },
-    vprintf(format, ptr) {
-        return bindings.printf(format, ptr);
-    },
+    printf: printf,
+    vprintf: printf,
     putchar(char) {
         printString(textDecoder.decode(new Uint8Array([ char ])));
+    },
+    puts(string) {
+        printString(readString(string) + '\n');
     },
     exit(status) {
         printString(`Exited with status ${status}\n`);
