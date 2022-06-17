@@ -208,7 +208,7 @@ const bindings = {
         const fontPath = readString(path);
         const fontPathParts = fontPath.split('/');
         const fontName = fontPathParts[fontPathParts.length - 1].split('.')[0];
-        new FontFace(fontName, `url(build/${fontPath})`).load().then(fontFace => {
+        new FontFace(fontName, `url(build/assets/${fontPath})`).load().then(fontFace => {
             document.fonts.add(fontFace);
             instance.exports.__indirect_function_table.get(callback)(font, wrap(fontFace));
         }).catch(reason => {
@@ -248,7 +248,7 @@ const bindings = {
     // Custom texture bindings
     Texture_Load(texture, path, callback) {
         const image = new Image;
-        image.src = `build/${readString(path)}`;
+        image.src = `build/assets/${readString(path)}`;
         image.onload = () => instance.exports.__indirect_function_table.get(callback)(texture, image.width, image.height, wrap(image));
         image.onerror = () => instance.exports.__indirect_function_table.get(callback)(texture, 0, 0, 0);
     },

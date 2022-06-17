@@ -201,11 +201,11 @@ void Game::init() {
     glEnableVertexAttribArray(texturePositionLocation);
 
     // Load fonts
-    textFont = Font::loadFromFile("assets/fonts/PressStart2P-Regular.ttf");
+    textFont = Font::loadFromFile("fonts/PressStart2P-Regular.ttf");
 
     // Load textures
-    crateTexture = Texture::loadFromFile("assets/textures/crate.jpg", false, false);
-    treeTexture = Texture::loadFromFile("assets/textures/tree.png", true, false);
+    crateTexture = Texture::loadFromFile("textures/crate.jpg", false, false);
+    treeTexture = Texture::loadFromFile("textures/tree.png", true, false);
     textTexture = NULL;
 
     // Create camera

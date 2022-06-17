@@ -2,11 +2,14 @@
 #include "Log.h"
 #include "utils.h"
 #include <math.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 Font *Font::loadFromFile(const char *path) {
     Font *font = new Font(path);
-    font->fontData = fileRead(path);
+    char assetsPath[256];
+    sprintf(assetsPath, "assets/%s", path);
+    font->fontData = fileRead(assetsPath);
     if (stbtt_InitFont(&font->fontInfo, font->fontData, stbtt_GetFontOffsetForIndex(font->fontData, 0)) == 0) {
         Log::error("Can't load font file: %s", path);
     }
