@@ -1,7 +1,26 @@
 #include "textures/Texture.h"
 #include "opengl.h"
+#include "std.h"
+#include "texture-loading.h"
 
-Texture::Texture(bool transparent, bool pixelated) : transparent(transparent), pixelated(pixelated), texture(0) {}
+void Texture::loadCallback(void *ptr, int32_t width, int32_t height, void *data) {
+    Texture *texture = (Texture *)ptr;
+    if (data == NULL) {
+        printf("[ERROR] Can't load texture file: %s\n", texture->path);
+    }
+    texture->createTexture(width, height, data);
+    Texture_Free(data);
+}
+
+Texture *Texture::fromFile(const char *path, bool transparent, bool pixelated) {
+    Texture *texture = new Texture(transparent, pixelated);
+    texture->path = path;
+    Texture_Load(path, texture, Texture::loadCallback);
+    return texture;
+}
+
+Texture::Texture(bool transparent, bool pixelated)
+    : path(NULL), transparent(transparent), pixelated(pixelated), texture(0) {}
 
 void Texture::createTexture(int32_t width, int32_t height, void *data) {
     this->width = width;

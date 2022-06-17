@@ -38,26 +38,28 @@ function renderText(text, fontName, size, color) {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
 
-    const string = readString(text);
+    const textString = readString(text);
     ctx.font = size + 'px ' + fontName;
-    canvas.width = ctx.measureText(string).width;
+    canvas.width = ctx.measureText(textString).width;
     canvas.height = size;
 
     ctx.font = size + 'px ' + fontName;
     ctx.textBaseline = 'top';
     ctx.fillStyle = `rgb(${color & 255}, ${(color >> 8) & 255}, ${(color >> 16) & 255})`;
-    ctx.fillText(string, 0, 0);
+    ctx.fillText(textString, 0, 0);
     return canvas;
 }
 
 let running = true, printBuffer = '';
 const bindings = {
-    print(string) {
-        printBuffer += readString(string);
-    },
-    println(string) {
-        console.log(printBuffer + readString(string));
-        printBuffer = '';
+    printf(format, ptr) {
+        const formatString = readString(format);
+        const buffer = new Uint32Array(instance.exports.memory.buffer, ptr);
+        const params = Array.from(formatString.matchAll(/%[0-9]*[s|d]/ig)).map(type => type[0]).map((type, index) => {
+            if (type[type.length - 1] == 'd') return buffer[index];
+            if (type[type.length - 1] == 's')  return readString(buffer[index]);
+        });
+        console.log.call(undefined, formatString, ...params);
     },
     exit(status) {
         console.log(`Exited with status ${status}`);

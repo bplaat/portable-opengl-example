@@ -98,13 +98,12 @@ void Game::init() {
     random = new Random(time(NULL));
 
     // Print OpenGL version info
-    print("Using ");
 #ifdef PLATFORM_DESKTOP
-    print("OpenGL ");
+    printf("[INFO] Using OpenGL %s on %s\n", glGetString(GL_VERSION), glGetString(GL_RENDERER));
 #endif
-    print((const char *)glGetString(GL_VERSION));
-    print(" on ");
-    println((const char *)glGetString(GL_RENDERER));
+#ifdef PLATFORM_WEB
+    printf("[INFO] Using %s on %s\n", glGetString(GL_VERSION), glGetString(GL_RENDERER));
+#endif
 
     // Create boxes
     boxesSize = 4 * 1024;
@@ -122,8 +121,7 @@ void Game::init() {
     if (!success) {
         char infoLog[512];
         glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        print("Vertex shader compilation error: ");
-        println(infoLog);
+        printf("[ERROR] Can't compile vertex shader: %s\n", infoLog);
         exit(EXIT_FAILURE);
         return;
     }
@@ -136,8 +134,7 @@ void Game::init() {
     if (!success) {
         char infoLog[512];
         glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-        print("Fragment shader compilation error: ");
-        println(infoLog);
+        printf("[ERROR] Can't compile fragment shader: %s\n", infoLog);
         exit(EXIT_FAILURE);
         return;
     }
@@ -196,8 +193,8 @@ void Game::init() {
     textFont = new Font("assets/fonts/PressStart2P-Regular.ttf");
 
     // Load textures
-    crateTexture = new AssetTexture("assets/textures/crate.jpg", false, false);
-    treeTexture = new AssetTexture("assets/textures/tree.png", true, false);
+    crateTexture = Texture::fromFile("assets/textures/crate.jpg", false, false);
+    treeTexture = Texture::fromFile("assets/textures/tree.png", true, false);
     textTexture = new TextTexture("Wasm WebGL Example!!!", textFont, 32, 0x0000ff);
 
     // Create camera

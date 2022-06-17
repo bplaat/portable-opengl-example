@@ -6,8 +6,8 @@ class Game;
 #include "math/Random.h"
 #include "objects/Box.h"
 #include "objects/PerspectiveCamera.h"
-#include "textures/AssetTexture.h"
 #include "textures/TextTexture.h"
+#include "textures/Texture.h"
 
 class Game {
   public:
@@ -23,8 +23,8 @@ class Game {
     uint32_t cameraUniform;
     uint32_t textureUniform;
     Font *textFont;
-    AssetTexture *crateTexture;
-    AssetTexture *treeTexture;
+    Texture *crateTexture;
+    Texture *treeTexture;
     TextTexture *textTexture;
     PerspectiveCamera *camera;
 

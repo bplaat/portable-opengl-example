@@ -10,7 +10,7 @@ Font::Font(const char *path) : path(path) {
     fontData = fileRead(path);
 
     if (stbtt_InitFont(&fontInfo, fontData, stbtt_GetFontOffsetForIndex(fontData, 0)) == 0) {
-        printf("Can't load font: %s", path);
+        printf("[ERROR] Can't load font file: %s", path);
         exit(EXIT_FAILURE);
     }
 #endif

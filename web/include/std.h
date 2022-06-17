@@ -10,15 +10,12 @@
 #define M_PI 3.14159265358979323846
 
 extern "C" {
-extern void print(const char *string);
-extern void println(const char *string);
+extern void printf(const char *format, ...);
 extern void exit(int32_t status);
-
 extern double floor(double x);
 extern double sin(double x);
 extern double cos(double x);
 extern double tan(double x);
-
 extern uint32_t time(void *timer);
 
 extern uint8_t __heap_base;

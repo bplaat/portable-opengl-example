@@ -5,7 +5,7 @@
 uint8_t *fileRead(const char *path) {
     FILE *file = fopen(path, "rb");
     if (file == NULL) {
-        printf("Can't load file: %s\n", path);
+        printf("[ERROR] Can't load file: %s\n", path);
         exit(EXIT_FAILURE);
     }
     fseek(file, 0, SEEK_END);

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <stdint.h>
 #include "Font.h"
+#include <stdint.h>
 
 // Custom texture bindings
 void Texture_Load(const char *path, void *ptr, void (*callback)(void *ptr, int32_t width, int32_t height, void *data));
