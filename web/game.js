@@ -3,20 +3,20 @@ const gl = canvas.getContext('webgl2');
 
 const textEncoder = new TextEncoder();
 const textDecoder = new TextDecoder();
-function readString(addr) {
-    const buffer = new Uint8Array(instance.exports.memory.buffer, addr);
+function readString(ptr) {
+    const buffer = new Uint8Array(instance.exports.memory.buffer, ptr);
     return textDecoder.decode(buffer.subarray(0, buffer.indexOf(0)));
 }
-function readStringFromPtr(addr) {
-    const buffer = new Uint32Array(instance.exports.memory.buffer, addr, 1);
+function readStringFromPtr(ptr) {
+    const buffer = new Uint32Array(instance.exports.memory.buffer, ptr, 1);
     return readString(buffer[0]);
 }
-function writeString(addr, string, lengthAddr = 0, bufferLength = undefined) {
-    const stringBuffer = new Uint8Array(instance.exports.memory.buffer, addr);
+function writeString(ptr, string, lengthPtr = 0, bufferLength = undefined) {
+    const stringBuffer = new Uint8Array(instance.exports.memory.buffer, ptr);
     const stringBytes = textEncoder.encode(string);
     const stringLength = bufferLength != undefined ? Math.min(stringBytes.length, bufferLength) : stringBytes.length;
-    if (lengthAddr != 0) {
-        const lengthBuffer = new Uint32Array(instance.exports.memory.buffer, lengthAddr, 1);
+    if (lengthPtr != 0) {
+        const lengthBuffer = new Uint32Array(instance.exports.memory.buffer, lengthPtr, 1);
         lengthBuffer[0] = stringLength;
     }
     let pos = 0;
@@ -27,9 +27,14 @@ function writeString(addr, string, lengthAddr = 0, bufferLength = undefined) {
     stringBuffer[pos] = 0;
 }
 
-let running = true, printBuffer = '';
-const shaders = [], programs = [], vertexArrays = [], buffers = [], attributes = [], uniforms = [], textures = [], images = [];
+const wrappers = [ undefined ];
+function wrap(thing) {
+    const wrapper = wrappers.length;
+    wrappers[wrapper] = thing;
+    return wrapper;
+}
 
+let running = true, printBuffer = '';
 const bindings = {
     print(string) {
         printBuffer += readString(string);
@@ -51,9 +56,9 @@ const bindings = {
 
     glGetString(name) {
         const string = gl.getParameter(name);
-        const stringAddr = instance.exports.malloc(string.length + 1);
-        writeString(stringAddr, string);
-        return stringAddr;
+        const stringPtr = instance.exports.malloc(string.length + 1);
+        writeString(stringPtr, string);
+        return stringPtr;
     },
     glViewport(x, y, width, height) {
         gl.viewport(x, y, width, height);
@@ -78,118 +83,98 @@ const bindings = {
     },
 
     glCreateShader(shaderType) {
-        const shader = shaders.length;
-        shaders[shader] = gl.createShader(shaderType);
-        return shader;
+        return wrap(gl.createShader(shaderType));
     },
     glShaderSource(shader, count, string, length) {
-        gl.shaderSource(shaders[shader], readStringFromPtr(string));
+        gl.shaderSource(wrappers[shader], readStringFromPtr(string));
     },
     glCompileShader(shader) {
-        gl.compileShader(shaders[shader]);
+        gl.compileShader(wrappers[shader]);
     },
     glGetShaderiv(shader, pname, params) {
         const buffer = new Uint32Array(instance.exports.memory.buffer, params, 1);
-        buffer[0] = gl.getShaderParameter(shaders[shader], gl.COMPILE_STATUS);
+        buffer[0] = gl.getShaderParameter(wrappers[shader], pname);
     },
     glGetShaderInfoLog(shader, maxLength, length, infoLog) {
-        writeString(infoLog, gl.getShaderInfoLog(shaders[shader]), length, maxLength);
+        writeString(infoLog, gl.getShaderInfoLog(wrappers[shader]), length, maxLength);
     },
     glDeleteShader(shader) {
-        gl.deleteShader(shaders[shader]);
-        shaders[shader] = undefined;
+        gl.deleteShader(wrappers[shader]);
+        wrappers[shader] = undefined;
     },
 
     glCreateProgram() {
-        const program = programs.length;
-        programs[program] = gl.createProgram();
-        return program;
+        return wrap(gl.createProgram());
     },
     glAttachShader(program, shader) {
-        gl.attachShader(programs[program], shaders[shader]);
+        gl.attachShader(wrappers[program], wrappers[shader]);
     },
     glLinkProgram(program) {
-        gl.linkProgram(programs[program]);
+        gl.linkProgram(wrappers[program]);
     },
     glUseProgram(program) {
-        gl.useProgram(programs[program]);
+        gl.useProgram(wrappers[program]);
     },
 
     glGenVertexArrays(n, arrays) {
         const buffer = new Uint32Array(instance.exports.memory.buffer, arrays, n);
-        for (let i = 0; i < n; i++) {
-            const vertexArray = vertexArrays.length;
-            vertexArrays[vertexArray] = gl.createVertexArray();
-            buffer[i] = vertexArray;
-        }
+        for (let i = 0; i < n; i++) buffer[i] = wrap(gl.createVertexArray());
     },
     glBindVertexArray(array) {
-        gl.bindVertexArray(vertexArrays[array]);
+        gl.bindVertexArray(wrappers[array]);
     },
 
-    glGenBuffers(n, _buffers) {
-        const _buffer = new Uint32Array(instance.exports.memory.buffer, _buffers, n);
-        for (let i = 0; i < n; i++) {
-            const buffer = buffers.length;
-            buffers[buffer] = gl.createBuffer();
-            _buffer[i] = buffer;
-        }
+    glGenBuffers(n, buffers) {
+        const buffer = new Uint32Array(instance.exports.memory.buffer, buffers, n);
+        for (let i = 0; i < n; i++) buffer[i] = wrap(gl.createBuffer());
     },
     glBindBuffer(target, buffer) {
-        gl.bindBuffer(target, buffers[buffer]);
+        gl.bindBuffer(target, wrappers[buffer]);
     },
     glBufferData(target, size, data, usage) {
         gl.bufferData(target, new Uint8Array(instance.exports.memory.buffer, data, size), usage);
     },
 
     glGetUniformLocation(program, name) {
-        const uniform = uniforms.length;
-        uniforms[uniform] = gl.getUniformLocation(programs[program], readString(name));
-        return uniform;
+        return wrap(gl.getUniformLocation(wrappers[program], readString(name)));
     },
     glUniformMatrix4fv(location, count, transpose, value) {
-        gl.uniformMatrix4fv(uniforms[location], transpose, new Float32Array(instance.exports.memory.buffer, value, 16));
+        gl.uniformMatrix4fv(wrappers[location], transpose, new Float32Array(instance.exports.memory.buffer, value, 16));
     },
     glGetAttribLocation(program, name) {
-        const attribute = attributes.length;
-        attributes[attribute] = gl.getAttribLocation(programs[program], readString(name));
-        return attribute;
+        return wrap(gl.getAttribLocation(wrappers[program], readString(name)));
     },
     glVertexAttribPointer(index, size, type, normalized, stride, pointer) {
-        gl.vertexAttribPointer(attributes[index], size, type, normalized, stride, pointer);
+        gl.vertexAttribPointer(wrappers[index], size, type, normalized, stride, pointer);
     },
     glEnableVertexAttribArray(index) {
-        gl.enableVertexAttribArray(attributes[index]);
+        gl.enableVertexAttribArray(wrappers[index]);
     },
     glDrawArrays(mode, first, count) {
         gl.drawArrays(mode, first, count);
     },
 
-    glGenTextures(n, _textures) {
-        const buffer = new Uint32Array(instance.exports.memory.buffer, _textures, n);
-        for (let i = 0; i < n; i++) {
-            const texture = textures.length;
-            textures[texture] = gl.createTexture();
-            buffer[i] = texture;
-        }
+    glGenTextures(n, textures) {
+        const buffer = new Uint32Array(instance.exports.memory.buffer, textures, n);
+        for (let i = 0; i < n; i++) buffer[i] = wrap(gl.createTexture());
     },
     glBindTexture(target, texture) {
-        gl.bindTexture(target, textures[texture]);
+        gl.bindTexture(target, wrappers[texture]);
     },
     glTexParameteri(target, pname, param) {
         gl.texParameteri(target, pname, param);
     },
     glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels) {
-        gl.texImage2D(target, level, internalformat, width, height, border, format, type, images[pixels - 1]);
+        gl.texImage2D(target, level, internalformat, width, height, border, format, type, wrappers[pixels]);
     },
     glGenerateMipmap(target) {
         gl.generateMipmap(target);
     },
-    glDeleteTextures(n, _textures) {
-        const buffer = new Uint32Array(instance.exports.memory.buffer, _textures, n);
+    glDeleteTextures(n, textures) {
+        const buffer = new Uint32Array(instance.exports.memory.buffer, textures, n);
         for (let i = 0; i < n; i++) {
-            gl.deleteTexture(textures[i]);
-            textures[i] = undefined;
+            gl.deleteTexture(wrappers[buffer[i]]);
+            wrappers[buffer[i]] = undefined;
         }
     },
 
@@ -197,9 +182,7 @@ const bindings = {
         const image = new Image();
         image.src = 'build/' + readString(path);
         image.onload = () => {
-            const imageId = images.length + 1;
-            images[imageId - 1] = image;
-            instance.exports.__indirect_function_table.get(callback)(ptr, image.width, image.height, imageId);
+            instance.exports.__indirect_function_table.get(callback)(ptr, image.width, image.height, wrap(image));
         };
     }
 };
