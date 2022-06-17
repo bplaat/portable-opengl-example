@@ -4,9 +4,11 @@
 #include <stddef.h>
 #include <stdint.h>
 class Game;
+#include "math/Random.h"
 #include "objects/Box.h"
 #include "objects/PerspectiveCamera.h"
-#include "textures/Texture.h"
+#include "textures/AssetTexture.h"
+#include "textures/TextTexture.h"
 
 class Game {
   public:
@@ -21,8 +23,10 @@ class Game {
     uint32_t matrixUniform;
     uint32_t cameraUniform;
     uint32_t textureUniform;
-    Texture *crateTexture;
-    Texture *treeTexture;
+    Font *textFont;
+    AssetTexture *crateTexture;
+    AssetTexture *treeTexture;
+    TextTexture *textTexture;
     PerspectiveCamera *camera;
 
     Box **boxes;

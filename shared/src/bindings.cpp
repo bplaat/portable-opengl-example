@@ -2,6 +2,7 @@
 
 #ifdef PLATFORM_DESKTOP
 
+    #include "Font.h"
     #include "stb_image/stb_image.h"
 
 void print(const char *string) {
@@ -20,6 +21,17 @@ void Texture_Load(const char *path, void *ptr, void (*callback)(void *ptr, int32
 
 void Texture_Free(void *data) {
     stbi_image_free(data);
+}
+
+void TextTexture_Render(const char *text, void *font, uint32_t size, uint32_t color, void *ptr,
+                        void (*callback)(void *ptr, int32_t width, int32_t height, void *data)) {
+    int32_t width, height;
+    void *data = ((Font *)font)->renderText(text, size, color, &width, &height);
+    callback(ptr, width, height, data);
+}
+
+void TextTexture_Free(void *data) {
+    free(data);
 }
 
 #endif

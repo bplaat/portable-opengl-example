@@ -16,6 +16,9 @@ void println(const char *string);
 
 void Texture_Load(const char *path, void *ptr, void (*callback)(void *ptr, int32_t width, int32_t height, void *data));
 void Texture_Free(void *data);
+void TextTexture_Render(const char *text, void *font, uint32_t size, uint32_t color, void *ptr,
+                        void (*callback)(void *ptr, int32_t width, int32_t height, void *data));
+void TextTexture_Free(void *data);
 
 #endif
 
@@ -120,7 +123,10 @@ extern void glDeleteTextures(int32_t n, uint32_t *textures);
 // Texture bindings
 extern void Texture_Load(const char *path, void *ptr,
                          void (*callback)(void *ptr, int32_t width, int32_t height, void *data));
-    #define Texture_Free(...)
+extern void Texture_Free(void *data);
+extern void TextTexture_Render(const char *text, void *font, uint32_t size, uint32_t color, void *ptr,
+                               void (*callback)(void *ptr, int32_t width, int32_t height, void *data));
+extern void TextTexture_Free(void *data);
 }
 
 // C++ standard library bindings

@@ -1,8 +1,6 @@
 #include "Game.h"
 #include "bindings.h"
-#include "math/Random.h"
 #include "math/utils.h"
-#include "objects/Box.h"
 
 #ifdef PLATFORM_WEB
 const char *vertexShaderSource = "#version 300 es\n"
@@ -193,9 +191,13 @@ void Game::init() {
                           (void *)(3 * sizeof(float)));
     glEnableVertexAttribArray(texturePositionLocation);
 
+    // Load fonts
+    textFont = new Font("assets/fonts/PressStart2P-Regular.ttf");
+
     // Load textures
-    crateTexture = new Texture("assets/textures/crate.jpg", false, false);
-    treeTexture = new Texture("assets/textures/tree.png", true, false);
+    crateTexture = new AssetTexture("assets/textures/crate.jpg", false, false);
+    treeTexture = new AssetTexture("assets/textures/tree.png", true, false);
+    textTexture = new TextTexture("Wasm WebGL Example!!!", textFont, 32, 0x0000ff);
 
     // Create camera
     camera = new PerspectiveCamera(radians(75), (float)width / (float)height, 0.1, 1000);
@@ -266,18 +268,27 @@ void Game::render() {
 
     // Draw tree
     glBindVertexArray(planeVertrexArray);
-    glBindTexture(GL_TEXTURE_2D, treeTexture->texture);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
 
     Matrix4 cameraMatrix;
     cameraMatrix.flat(width, height);
     glUniformMatrix4fv(cameraUniform, 1, GL_FALSE, &cameraMatrix.elements[0]);
 
-    Matrix4 itemMatrix;
-    itemMatrix.rect(10, 10, 256, 256);
-    glUniformMatrix4fv(matrixUniform, 1, GL_FALSE, &itemMatrix.elements[0]);
+    Matrix4 treePlaneMatrix;
+    treePlaneMatrix.rect(16, 16, 256, 256);
+    glUniformMatrix4fv(matrixUniform, 1, GL_FALSE, &treePlaneMatrix.elements[0]);
 
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_BLEND);
+    glBindTexture(GL_TEXTURE_2D, treeTexture->texture);
     glDrawArrays(GL_TRIANGLES, 0, 6);
+
+    // Draw text
+    Matrix4 textPlaneMatrix;
+    textPlaneMatrix.rect(16 + 256 + 32, 16 + (256 - textTexture->height) / 2, textTexture->width, textTexture->height);
+    glUniformMatrix4fv(matrixUniform, 1, GL_FALSE, &textPlaneMatrix.elements[0]);
+
+    glBindTexture(GL_TEXTURE_2D, textTexture->texture);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+
     glDisable(GL_BLEND);
 }
