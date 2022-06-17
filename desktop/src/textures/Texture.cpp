@@ -11,7 +11,7 @@ Texture *Texture::loadFromFile(const char *path, bool transparent, bool pixelate
     if (data == NULL) {
         Log::error("Can't load texture file: %s", texture->path);
     }
-    texture->create(width, height, data);
+    texture->update(width, height, data);
     stbi_image_free(data);
     return texture;
 }

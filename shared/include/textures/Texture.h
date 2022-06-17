@@ -23,7 +23,7 @@ class Texture {
     Texture(bool transparent, bool pixelated);
 
   public:
-    void create(int32_t width, int32_t height, void *data);
+    void update(int32_t width, int32_t height, void *data);
 
     ~Texture();
 };

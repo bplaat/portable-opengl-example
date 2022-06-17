@@ -230,7 +230,12 @@ void Game::resize(int32_t width, int32_t height, float scale) {
 void Game::update(float delta) {
     // Create text texture when font is loaded
     if (textFont->loaded && textTexture == NULL) {
-        textTexture = TextTexture::fromText("Wasm WebGL Example!!!", textFont, 32, 0x0000ff);
+#ifdef PLATFORM_DESKTOP
+        textTexture = TextTexture::fromText("Native OpenGL Example!!!", textFont, 32, 0x0000ff);
+#endif
+#ifdef PLATFORM_WEB
+        textTexture = TextTexture::fromText("WebAssembly WebGL Example!!!", textFont, 32, 0x0000ff);
+#endif
     }
 
     // Update boxes

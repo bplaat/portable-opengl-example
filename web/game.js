@@ -62,7 +62,7 @@ const bindings = {
         printString(textDecoder.decode(new Uint8Array([ char ])));
     },
     puts(string) {
-        printString(readString(string) + '\n');
+        printString(`${readString(string)}\n`);
     },
     exit(status) {
         printString(`Exited with status ${status}\n`);
@@ -216,18 +216,18 @@ const bindings = {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         const textString = readString(text);
-        ctx.font = size + 'px ' + wrappers[fontFace].family;
+        ctx.font = `${size}px ${wrappers[fontFace].family}`;
         return ctx.measureText(textString).width;
     },
     Font_RenderText(fontFace, text, size, color, bitmapWidth, bitmapHeight) {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         const textString = readString(text);
-        ctx.font = size + 'px ' + wrappers[fontFace].family;
+        ctx.font = `${size}px ${wrappers[fontFace].family}`;
         canvas.width = ctx.measureText(textString).width;
         canvas.height = size;
 
-        ctx.font = size + 'px ' + wrappers[fontFace].family;
+        ctx.font = `${size}px ${wrappers[fontFace].family}`;
         ctx.textBaseline = 'top';
         ctx.fillStyle = `rgb(${color & 255}, ${(color >> 8) & 255}, ${(color >> 16) & 255})`;
         ctx.fillText(textString, 0, 0);
@@ -244,14 +244,10 @@ const bindings = {
 
     // Custom texture bindings
     Texture_Load(texture, path, callback) {
-        const image = new Image();
+        const image = new Image;
         image.src = `build/${readString(path)}`;
-        image.onload = () => {
-            instance.exports.__indirect_function_table.get(callback)(texture, image.width, image.height, wrap(image));
-        };
-        image.onerror = () => {
-            instance.exports.__indirect_function_table.get(callback)(texture, 0, 0, 0);
-        };
+        image.onload = () => instance.exports.__indirect_function_table.get(callback)(texture, image.width, image.height, wrap(image));
+        image.onerror = () => instance.exports.__indirect_function_table.get(callback)(texture, 0, 0, 0);
     },
     Texture_Free(data) {
         wrappers[data] = undefined;

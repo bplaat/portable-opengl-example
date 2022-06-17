@@ -6,7 +6,7 @@ void Texture::loadCallback(Texture *texture, int32_t width, int32_t height, void
     if (data == NULL) {
         Log::error("Can't load texture file: %s", texture->path);
     }
-    texture->create(width, height, data);
+    texture->update(width, height, data);
     Texture_Free(data);
 }
 

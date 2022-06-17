@@ -5,7 +5,7 @@ TextTexture *TextTexture::fromText(const char *text, Font *font, uint32_t size, 
 
     int32_t width, height;
     void *data = font->renderText(text, size, color, &width, &height);
-    textTexture->create(width, height, data);
+    textTexture->update(width, height, data);
 
 #ifdef PLATFORM_DESKOP
     free(data);

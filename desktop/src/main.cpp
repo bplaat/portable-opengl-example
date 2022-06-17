@@ -1,7 +1,7 @@
 #include "Game.h"
 #include "Window.h"
-#include <stdlib.h>
 #include "utils.h"
+#include <stdlib.h>
 
 void onResizeListener(int32_t width, int32_t height, float scale) {
     Game::getInstance()->resize(width, height, scale);
