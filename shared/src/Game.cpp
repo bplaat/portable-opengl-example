@@ -39,12 +39,12 @@ const char *fragmentShaderSource =
 float planeVertices[] = {
     // Vertex position, Texture position
     -0.5, -0.5, 0, 0, 0, // First triangle
-    0.5,  -0.5, 0, 1, 0, // First triangle
+    -0.5, 0.5,  0, 0, 1, // First triangle
     0.5,  0.5,  0, 1, 1, // First triangle
 
     -0.5, -0.5, 0, 0, 0, // Second triangle
     0.5,  0.5,  0, 1, 1, // Second triangle
-    -0.5, 0.5,  0, 0, 1  // Second triangle
+    0.5,  -0.5, 0, 1, 0  // Second triangle
 };
 
 float cubeVertices[] = {
@@ -289,13 +289,14 @@ void Game::render() {
 
     // Draw tree
     glBindVertexArray(planeVertrexArray);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
+    Matrix4 cameraMatrix;
+    cameraMatrix.flat(width, height);
+    glUniformMatrix4fv(cameraUniform, 1, GL_FALSE, &cameraMatrix.elements[0]);
     if (treeTexture->loaded) {
-        Matrix4 cameraMatrix;
-        cameraMatrix.flat(width, height);
-        glUniformMatrix4fv(cameraUniform, 1, GL_FALSE, &cameraMatrix.elements[0]);
-
         Matrix4 treePlaneMatrix;
         treePlaneMatrix.rect(16, 16, 256, 256);
         glUniformMatrix4fv(matrixUniform, 1, GL_FALSE, &treePlaneMatrix.elements[0]);
@@ -315,4 +316,5 @@ void Game::render() {
         glDrawArrays(GL_TRIANGLES, 0, 6);
     }
     glDisable(GL_BLEND);
+    glDisable(GL_CULL_FACE);
 }

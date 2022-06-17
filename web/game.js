@@ -103,6 +103,9 @@ const bindings = {
     glBlendFunc(sfactor, dfactor) {
         gl.blendFunc(sfactor, dfactor);
     },
+    glCullFace(mode) {
+        gl.cullFace(mode);
+    },
 
     glCreateShader(shaderType) {
         return wrap(gl.createShader(shaderType));

@@ -10,8 +10,11 @@
 #define GL_DEPTH_TEST 0x0B71
 #define GL_SCISSOR_TEST 0x0C11
 #define GL_BLEND 0x0BE2
+#define GL_CULL_FACE 0x0B44
 #define GL_SRC_ALPHA 0x0302
 #define GL_ONE_MINUS_SRC_ALPHA 0x0303
+#define GL_FRONT 0x0404
+#define GL_BACK 0x0405
 #define GL_FRAGMENT_SHADER 0x8B30
 #define GL_VERTEX_SHADER 0x8B31
 #define GL_COMPILE_STATUS 0x8B81
@@ -20,6 +23,7 @@
 #define GL_FLOAT 0x1406
 #define GL_FALSE 0
 #define GL_TRUE 1
+#define GL_LINES 0x0001
 #define GL_TRIANGLES 0x0004
 #define GL_TEXTURE_2D 0x0DE1
 #define GL_TEXTURE_MIN_FILTER 0x2801
@@ -41,6 +45,7 @@ extern void glScissor(int32_t x, int32_t y, uint32_t width, uint32_t height);
 extern void glEnable(uint32_t cap);
 extern void glDisable(uint32_t cap);
 extern void glBlendFunc(uint32_t sfactor, uint32_t dfactor);
+extern void glCullFace(uint32_t mode);
 
 extern uint32_t glCreateShader(uint32_t shaderType);
 extern void glShaderSource(uint32_t shader, int32_t count, const char **string, const int32_t *length);
