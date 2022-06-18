@@ -8,6 +8,8 @@
 # Tip: If you run a webserver with live refresh you wont have to manually refresh the webbrowser
 # https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer
 
+app_name="portablegl"
+
 # Remove build folders
 if [[ $1 = "clean" ]]; then
     rm -rf desktop/build web/build
@@ -51,9 +53,9 @@ elif [[ $1 = "desktop" ]]; then
     cp -r assets desktop/build
 
     # Link final executable
-    if g++ $(find desktop/build -name *.o) $(pkg-config --libs glfw3) -o desktop/build/game; then
+    if g++ $(find desktop/build -name *.o) $(pkg-config --libs glfw3) -o desktop/build/$app_name; then
         cd desktop/build
-        ./game
+        ./$app_name
     fi
 
 # Web build script
@@ -91,7 +93,7 @@ else
 
         # Link final wasm bundle
         wasm-ld $(find web/build -name *.o) --no-entry --allow-undefined \
-            -z,stack-size=$[256 * 1024] --export-table -o web/build/game.wasm
+            -z,stack-size=$[256 * 1024] --export-table -o web/build/$app_name.wasm
 
         rm -rf web/build/shared web/build/web
     fi
@@ -131,5 +133,5 @@ else
 
     # Link final wasm bundle
     wasm-ld $(find web/build -name *.o) --no-entry --allow-undefined \
-        -z,stack-size=$[256 * 1024] --export-table -o web/build/game-simd.wasm
+        -z,stack-size=$[256 * 1024] --export-table -o web/build/$app_name-simd.wasm
 fi
