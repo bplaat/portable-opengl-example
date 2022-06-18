@@ -4,3 +4,4 @@ IndentWidth: 4
 ColumnLimit: 120
 IndentPPDirectives: BeforeHash
 AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: true

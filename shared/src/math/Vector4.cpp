@@ -140,7 +140,6 @@ Vector4 &Vector4::operator*=(Matrix4 const &rhs) {
     sum = _mm_add_ps(sum, _mm_mul_ps(_mm_load_ps(&rhs.elements[12]), _mm_set1_ps(vec[3])));
     _mm_store_ps(&x, sum);
 #else
-    float x = x, y = y, z = z, w = w;
     x = rhs.elements[0] * x + rhs.elements[4] * y + rhs.elements[8] * z + rhs.elements[12] * w;
     y = rhs.elements[1] * x + rhs.elements[5] * y + rhs.elements[9] * z + rhs.elements[13] * w;
     z = rhs.elements[2] * x + rhs.elements[6] * y + rhs.elements[10] * z + rhs.elements[14] * w;

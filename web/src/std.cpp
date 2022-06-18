@@ -15,6 +15,7 @@ __attribute__((export_name("malloc"))) void *malloc(size_t size) {
 }
 
 __attribute__((export_name("free"))) void free(void *ptr) {
+    (void)ptr;
     // Nothing to do here :)
 }
 

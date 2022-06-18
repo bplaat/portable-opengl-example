@@ -37,8 +37,8 @@ elif [[ $1 = "desktop" ]]; then
         fi
 
         if [[ $file -nt $object ]]; then
-            if [[ $ext = "c" ]]; then compiler="gcc"; else compiler="g++"; fi
-            if $compiler -c -DDEBUG -DPLATFORM_DESKTOP -Ishared/include -Idesktop/include -Ofast $file -o $object $(pkg-config --cflags glfw3); then
+            if [[ $ext = "c" ]]; then compiler="gcc --std=c11"; else compiler="g++ --std=c++11"; fi
+            if $compiler -c -Wall -Wextra -Wpedantic -DDEBUG -DPLATFORM_DESKTOP -Ishared/include -Idesktop/include -Ofast $file -o $object $(pkg-config --cflags glfw3); then
                 echo $file
             else
                 exit
@@ -80,8 +80,8 @@ else
             fi
 
             if [[ $file -nt $object ]]; then
-                if [[ $ext = "c" ]]; then compiler="clang"; else compiler="clang++"; fi
-                if $compiler -c -DDEBUG -DPLATFORM_WEB -Ishared/include -Iweb/include -Os --target=wasm32 $file -o $object; then
+                if [[ $ext = "c" ]]; then compiler="clang --std=c11"; else compiler="clang++ --std=c++11"; fi
+                if $compiler -c -Wall -Wextra -Wpedantic -DDEBUG -DPLATFORM_WEB -Ishared/include -Iweb/include -Os --target=wasm32 $file -o $object; then
                     echo $file
                 else
                     exit
@@ -116,8 +116,8 @@ else
         fi
 
         if [[ $file -nt $object ]]; then
-            if [[ $ext = "c" ]]; then compiler="clang"; else compiler="clang++"; fi
-            if $compiler -c -DDEBUG -DPLATFORM_WEB -D__WASM_SIMD__ -Ishared/include -Iweb/include -Os --target=wasm32 -msimd128 $file -o $object; then
+            if [[ $ext = "c" ]]; then compiler="clang --std=c11"; else compiler="clang++ --std=c++11"; fi
+            if $compiler -c -Wall -Wextra -Wpedantic -DDEBUG -DPLATFORM_WEB -D__WASM_SIMD__ -Ishared/include -Iweb/include -Os --target=wasm32 -msimd128 $file -o $object; then
                 echo $file
             else
                 exit

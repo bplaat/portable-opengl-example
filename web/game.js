@@ -260,15 +260,15 @@ const bindings = {
 const useSIMD = await WebAssembly.validate(new Uint8Array([0,97,115,109,1,0,0,0,1,5,1,96,0,1,123,3,2,1,0,10,10,1,8,0,65,0,253,15,253,98,11]));
 const { instance } = await WebAssembly.instantiateStreaming(fetch(`build/game${useSIMD ? '-simd' : ''}.wasm`), { env: bindings });
 
-function resize() {
+function onResize() {
     canvas.width = window.innerWidth * window.devicePixelRatio;
     canvas.height = window.innerHeight * window.devicePixelRatio;
     canvas.style.width = `${window.innerWidth}px`;
     canvas.style.height = `${window.innerHeight}px`;
-    instance.exports.resize(window.innerWidth, window.innerHeight, window.devicePixelRatio);
+    instance.exports.onResize(window.innerWidth, window.innerHeight, window.devicePixelRatio);
 }
-window.addEventListener('resize', resize);
-resize();
+window.addEventListener('resize', onResize);
+onResize();
 
 instance.exports.init();
 let time = window.performance.now();

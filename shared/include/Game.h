@@ -36,7 +36,7 @@ class Game {
 
     void init();
 
-    void resize(int32_t width, int32_t height, float scale);
+    void onResize(int32_t width, int32_t height, float scale);
 
     void update(float delta);
 

@@ -12,6 +12,7 @@ void Window::sizeCallback(GLFWwindow *window, int width, int height) {
 }
 
 void Window::contentScaleCallback(GLFWwindow *window, float scaleX, float scaleY) {
+    (void)scaleX;
     Window *windowPtr = (Window *)glfwGetWindowUserPointer(window);
     windowPtr->scale = scaleY;
     if (windowPtr->onResizeListener != NULL) {

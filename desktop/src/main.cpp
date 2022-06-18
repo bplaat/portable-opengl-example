@@ -4,16 +4,16 @@
 #include <stdlib.h>
 
 void onResizeListener(int32_t width, int32_t height, float scale) {
-    Game::getInstance()->resize(width, height, scale);
+    Game::getInstance()->onResize(width, height, scale);
 }
 
-int main(int argc, char **argv) {
+int main() {
     Window window("Simple Native OpenGL Example", 1280, 720);
     window.setMinSize(320, 240);
     window.setOnResizeListener(onResizeListener);
 
     Game *game = Game::getInstance();
-    game->resize(window.width, window.height, window.scale);
+    game->onResize(window.width, window.height, window.scale);
     game->init();
 
     double time = glfwGetTime();
