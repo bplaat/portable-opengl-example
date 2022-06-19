@@ -1,137 +1,51 @@
 #!/bin/sh
-# A simple incremental cpp project build script
-# ./build.sh ; Build the web wasm simd bundle for Firefox and Chrome (not Safari for the moment!)
-# ./build.sh release ; Build the web wasm without simd bundle for all modern browsers
-# ./build.sh desktop ; Build the desktop application and run it
+# A simple incremental build script for android, desktop and web
 # ./build.sh clean ; Remove all build folders (and so all the incremental builded objects)
 # ./build.sh format ; Run the clang formatter over the whole c and cpp code base
-# Tip: If you run a webserver with live refresh you wont have to manually refresh the webbrowser
+# ./build.sh android ; Build and run a debug version of the Android application (only ARM64)
+# ./build.sh android release ; Build a release version of the Android app (all instructionsets)
+# ./build.sh desktop ; Build and run a debug version of the desktop app
+# ./build.sh desktop release ; Build a release version of the desktop app
+# ./build.sh web ; Build a debug version of the WASM bundle (only with SIMD so only for Firefox and Chrome)
+# ./build.sh web release ; Build a release version of the WASM bundle (for all browsers)
+# Tip for web: If you run a webserver with live refresh you wont have to manually refresh the webbrowser
 # https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer
 
-app_name="portablegl"
+export app_name="portablegl"
+export app_package="com.example.portablegl"
+export app_version="0.1.0"
 
-# Remove build folders
 if [[ $1 = "clean" ]]; then
-    rm -rf desktop/build web/build
+    rm -rf android/build desktop/build web/build
 
-# Format source code
 elif [[ $1 = "format" ]]; then
     clang-format -i $(find . -name *.h -o -name *.c -o -name *.cpp)
 
-# Desktop build script
+elif [[ $1 = "android" ]]; then
+    if [[ $2 = "key" ]]; then
+        ./android/build.sh key
+    elif [[ $2 = "log" ]]; then
+        ./android/build.sh log
+    elif [[ $2 = "release" ]]; then
+        ./android/build.sh release
+    else
+        ./android/build.sh
+    fi
+
 elif [[ $1 = "desktop" ]]; then
-    mkdir -p desktop/build/shared desktop/build/desktop
-
-    for file in $(find shared/src desktop/src -name *.c -o -name *.cpp); do
-        name=${file%.*}
-        ext=${file##*.}
-        if [[ ${file::6} = "shared" ]]; then
-            module="shared"
-            object="desktop/build/$module/${name:11}.o"
-            folder=$(dirname ${name:11})
-        else
-            module="desktop"
-            object="desktop/build/$module/${name:12}.o"
-            folder=$(dirname ${name:12})
-        fi
-        if [[ "$folder" != "." ]]; then
-            mkdir -p "desktop/build/$module/$folder"
-        fi
-
-        if [[ $file -nt $object ]]; then
-            if [[ $ext = "c" ]]; then compiler="gcc --std=c11"; else compiler="g++ --std=c++11"; fi
-            if $compiler -c -Wall -Wextra -Wpedantic -DDEBUG -DPLATFORM_DESKTOP -Ishared/include -Idesktop/include -Ofast $file -o $object $(pkg-config --cflags glfw3); then
-                echo $file
-            else
-                exit
-            fi
-        fi
-    done
-
-    # Copy assets folder
-    rm -rf desktop/build/assets
-    cp -r assets desktop/build
-
-    # Link final executable
-    if g++ $(find desktop/build -name *.o) $(pkg-config --libs glfw3) -o desktop/build/$app_name; then
-        cd desktop/build
-        ./$app_name
+    if [[ $2 = "release" ]]; then
+        ./desktop/build.sh release
+    else
+        ./desktop/build.sh
     fi
 
-# Web build script
+elif [[ $1 = "web" ]]; then
+    if [[ $2 = "release" ]]; then
+        ./web/build.sh release
+    else
+        ./web/build.sh
+    fi
+
 else
-    # Also build without WASM SIMD version
-    if [[ $1 = "release" ]]; then
-        rm -rf web/build/shared web/build/web
-        mkdir -p web/build/shared web/build/web
-
-        for file in $(find shared/src web/src -name *.c -o -name *.cpp); do
-            name=${file%.*}
-            ext=${file##*.}
-            if [[ ${file::3} = "web" ]]; then
-                module="web"
-                object="web/build/$module/${name:8}.o"
-                folder=$(dirname ${name:8})
-            else
-                module="shared"
-                object="web/build/$module/${name:11}.o"
-                folder=$(dirname ${name:11})
-            fi
-            if [[ "$folder" != "." ]]; then
-                mkdir -p "web/build/$module/$folder"
-            fi
-
-            if [[ $file -nt $object ]]; then
-                if [[ $ext = "c" ]]; then compiler="clang --std=c11"; else compiler="clang++ --std=c++11"; fi
-                if $compiler -c -Wall -Wextra -Wpedantic -DDEBUG -DPLATFORM_WEB -Ishared/include -Iweb/include -Os --target=wasm32 $file -o $object; then
-                    echo $file
-                else
-                    exit
-                fi
-            fi
-        done
-
-        # Link final wasm bundle
-        wasm-ld $(find web/build -name *.o) --no-entry --allow-undefined \
-            -z,stack-size=$[256 * 1024] --export-table -o web/build/$app_name.wasm
-
-        rm -rf web/build/shared web/build/web
-    fi
-
-    mkdir -p web/build/shared web/build/web
-
-    # Build WASM SIMD version
-    for file in $(find shared/src web/src -name *.c -o -name *.cpp); do
-        name=${file%.*}
-        ext=${file##*.}
-        if [[ ${file::3} = "web" ]]; then
-            module="web"
-            object="web/build/$module/${name:8}.o"
-            folder=$(dirname ${name:8})
-        else
-            module="shared"
-            object="web/build/$module/${name:11}.o"
-            folder=$(dirname ${name:11})
-        fi
-        if [[ "$folder" != "." ]]; then
-            mkdir -p "web/build/$module/$folder"
-        fi
-
-        if [[ $file -nt $object ]]; then
-            if [[ $ext = "c" ]]; then compiler="clang --std=c11"; else compiler="clang++ --std=c++11"; fi
-            if $compiler -c -Wall -Wextra -Wpedantic -DDEBUG -DPLATFORM_WEB -D__WASM_SIMD__ -Ishared/include -Iweb/include -Os --target=wasm32 -msimd128 $file -o $object; then
-                echo $file
-            else
-                exit
-            fi
-        fi
-    done
-
-    # Copy assets folder
-    rm -rf web/build/assets
-    cp -r assets web/build
-
-    # Link final wasm bundle
-    wasm-ld $(find web/build -name *.o) --no-entry --allow-undefined \
-        -z,stack-size=$[256 * 1024] --export-table -o web/build/$app_name-simd.wasm
+    echo "Use one of the subcommands to do something..."
 fi

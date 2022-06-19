@@ -11,6 +11,8 @@ void Log::debug(const char *format, ...) {
     vprintf(format, args);
     printf("\n");
     va_end(args);
+#else
+    (void)format;
 #endif
 }
 

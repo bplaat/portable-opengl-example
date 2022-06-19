@@ -221,7 +221,7 @@ Matrix4 &Matrix4::operator*=(Matrix4 const &rhs) {
     sum = vmlaq_f32(sum, a2, vmovq_n_f32(b[2]));
     sum = vmlaq_f32(sum, a3, vmovq_n_f32(b[3]));
     vst1q_f32(&elements[12], sum);
-#elif defined __SSE2__
+#elif defined(__SSE2__)
     __m128 a0 = _mm_load_ps(&elements[0]);
     __m128 a1 = _mm_load_ps(&elements[4]);
     __m128 a2 = _mm_load_ps(&elements[8]);
