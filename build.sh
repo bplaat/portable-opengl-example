@@ -2,8 +2,8 @@
 # A simple incremental build script for android, desktop and web
 # ./build.sh clean ; Remove all build folders (and so all the incremental builded objects)
 # ./build.sh format ; Run the clang formatter over the whole c and cpp code base
-# ./build.sh android ; Build and run a debug version of the Android application (only ARM64)
-# ./build.sh android release ; Build a release version of the Android app (all instructionsets)
+# ./build.sh android ; Build and run a debug version of the Android application (change debug arch below)
+# ./build.sh android release ; Build a release version of the Android app (all archs: aarch64 armv7a x86_64 x86)
 # ./build.sh desktop ; Build and run a debug version of the desktop app
 # ./build.sh desktop release ; Build a release version of the desktop app
 # ./build.sh web ; Build a debug version of the WASM bundle (only with SIMD so only for Firefox and Chrome)
@@ -14,6 +14,8 @@
 export app_name="portablegl"
 export app_package="com.example.portablegl"
 export app_version="0.1.0"
+export android_ndk_platform="darwin-x86_64" # Change this to your ANDROID_NDK_ROOT/toolchains/llvm/prebuilt folder name
+export android_debug_arch="aarch64" # Change this x86_64 if you are debugging your app in a x86_64 Android simulator
 
 if [[ $1 = "clean" ]]; then
     rm -rf android/build desktop/build web/build

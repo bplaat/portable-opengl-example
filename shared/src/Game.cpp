@@ -108,7 +108,7 @@ void Game::init() {
     Log::info("Using OpenGL %s on %s", glGetString(GL_VERSION), glGetString(GL_RENDERER));
 #endif
 
-#ifdef __ARM_NEON__
+#ifdef __ARM_NEON
     Log::info("Using ARM NEON SIMD");
 #endif
 #ifdef __SSE2__

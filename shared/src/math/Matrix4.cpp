@@ -1,10 +1,9 @@
 #include "math/Matrix4.h"
 #include "std.h"
-#ifdef __ARM_NEON__
-    #include <arm_neon.h>
-#endif
 #ifdef __SSE2__
     #include <emmintrin.h>
+#elif defined(__ARM_NEON)
+    #include <arm_neon.h>
 #endif
 #include "math/utils.h"
 
@@ -188,40 +187,7 @@ void Matrix4::rect(float x, float y, float width, float height) {
 }
 
 Matrix4 &Matrix4::operator*=(Matrix4 const &rhs) {
-#ifdef __ARM_NEON__
-    float32x4_t a0 = vld1q_f32(&elements[0]);
-    float32x4_t a1 = vld1q_f32(&elements[4]);
-    float32x4_t a2 = vld1q_f32(&elements[8]);
-    float32x4_t a3 = vld1q_f32(&elements[12]);
-
-    float32x4_t b = vld1q_f32(&rhs.elements[0]);
-    float32x4_t sum = vmulq_f32(a0, vmovq_n_f32(b[0]));
-    sum = vmlaq_f32(sum, a1, vmovq_n_f32(b[1]));
-    sum = vmlaq_f32(sum, a2, vmovq_n_f32(b[2]));
-    sum = vmlaq_f32(sum, a3, vmovq_n_f32(b[3]));
-    vst1q_f32(&elements[0], sum);
-
-    b = vld1q_f32(&rhs.elements[4]);
-    sum = vmulq_f32(a0, vmovq_n_f32(b[0]));
-    sum = vmlaq_f32(sum, a1, vmovq_n_f32(b[1]));
-    sum = vmlaq_f32(sum, a2, vmovq_n_f32(b[2]));
-    sum = vmlaq_f32(sum, a3, vmovq_n_f32(b[3]));
-    vst1q_f32(&elements[4], sum);
-
-    b = vld1q_f32(&rhs.elements[8]);
-    sum = vmulq_f32(a0, vmovq_n_f32(b[0]));
-    sum = vmlaq_f32(sum, a1, vmovq_n_f32(b[1]));
-    sum = vmlaq_f32(sum, a2, vmovq_n_f32(b[2]));
-    sum = vmlaq_f32(sum, a3, vmovq_n_f32(b[3]));
-    vst1q_f32(&elements[8], sum);
-
-    b = vld1q_f32(&rhs.elements[12]);
-    sum = vmulq_f32(a0, vmovq_n_f32(b[0]));
-    sum = vmlaq_f32(sum, a1, vmovq_n_f32(b[1]));
-    sum = vmlaq_f32(sum, a2, vmovq_n_f32(b[2]));
-    sum = vmlaq_f32(sum, a3, vmovq_n_f32(b[3]));
-    vst1q_f32(&elements[12], sum);
-#elif defined(__SSE2__)
+#ifdef __SSE2__
     __m128 a0 = _mm_load_ps(&elements[0]);
     __m128 a1 = _mm_load_ps(&elements[4]);
     __m128 a2 = _mm_load_ps(&elements[8]);
@@ -254,6 +220,39 @@ Matrix4 &Matrix4::operator*=(Matrix4 const &rhs) {
     sum = _mm_add_ps(sum, _mm_mul_ps(a2, _mm_set1_ps(b[2])));
     sum = _mm_add_ps(sum, _mm_mul_ps(a3, _mm_set1_ps(b[3])));
     _mm_store_ps(&elements[12], sum);
+#elif defined(__ARM_NEON)
+    float32x4_t a0 = vld1q_f32(&elements[0]);
+    float32x4_t a1 = vld1q_f32(&elements[4]);
+    float32x4_t a2 = vld1q_f32(&elements[8]);
+    float32x4_t a3 = vld1q_f32(&elements[12]);
+
+    float32x4_t b = vld1q_f32(&rhs.elements[0]);
+    float32x4_t sum = vmulq_f32(a0, vmovq_n_f32(b[0]));
+    sum = vmlaq_f32(sum, a1, vmovq_n_f32(b[1]));
+    sum = vmlaq_f32(sum, a2, vmovq_n_f32(b[2]));
+    sum = vmlaq_f32(sum, a3, vmovq_n_f32(b[3]));
+    vst1q_f32(&elements[0], sum);
+
+    b = vld1q_f32(&rhs.elements[4]);
+    sum = vmulq_f32(a0, vmovq_n_f32(b[0]));
+    sum = vmlaq_f32(sum, a1, vmovq_n_f32(b[1]));
+    sum = vmlaq_f32(sum, a2, vmovq_n_f32(b[2]));
+    sum = vmlaq_f32(sum, a3, vmovq_n_f32(b[3]));
+    vst1q_f32(&elements[4], sum);
+
+    b = vld1q_f32(&rhs.elements[8]);
+    sum = vmulq_f32(a0, vmovq_n_f32(b[0]));
+    sum = vmlaq_f32(sum, a1, vmovq_n_f32(b[1]));
+    sum = vmlaq_f32(sum, a2, vmovq_n_f32(b[2]));
+    sum = vmlaq_f32(sum, a3, vmovq_n_f32(b[3]));
+    vst1q_f32(&elements[8], sum);
+
+    b = vld1q_f32(&rhs.elements[12]);
+    sum = vmulq_f32(a0, vmovq_n_f32(b[0]));
+    sum = vmlaq_f32(sum, a1, vmovq_n_f32(b[1]));
+    sum = vmlaq_f32(sum, a2, vmovq_n_f32(b[2]));
+    sum = vmlaq_f32(sum, a3, vmovq_n_f32(b[3]));
+    vst1q_f32(&elements[12], sum);
 #else
     float a00 = elements[0];
     float a01 = elements[1];
