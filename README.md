@@ -11,7 +11,7 @@ You need the [LLVM toolchain](https://llvm.org/) or a [GCC compiler environment]
 You need the [LLVM toolchain](https://llvm.org/) to run the `build.sh web` script. It is very usefull to use the [WebAssembly Binary Toolkit](https://github.com/WebAssembly/wabt) tools to disassamble and inspect your wasm bundles.
 
 ## Screenshots
-![A screenshot of the program running in Firefox, Chrome, Safari and a native desktop window](docs/screenshot-web-desktop.jpg)
+![A screenshot of the program running in Firefox, Chrome, Safari and a native desktop window](docs/screenshot-desktop-web.jpg)
 
 *A screenshot of the program running in Firefox, Chrome, Safari and a native desktop window*
 
