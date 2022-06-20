@@ -132,7 +132,7 @@ else
         cd ../..
     done
 
-    echo "Packing and signing application"
+    echo "Aligning and signing application"
     zipalign -f -p 4 android/build/$app_name-unaligned.apk android/build/$app_name.apk
     if [ "$(uname -s)" == "Linux" ] || [ "$(uname -s)" == "Darwin" ]; then
         apksigner sign --v4-signing-enabled false --ks android/keystore.jks --ks-pass pass:$password --ks-pass pass:$password android/build/$app_name.apk
@@ -140,7 +140,9 @@ else
         apksigner.bat sign --v4-signing-enabled false --ks android/keystore.jks --ks-pass pass:$password --ks-pass pass:$password android/build/$app_name.apk
     fi
 
-    echo "Installing and opening application"
-    adb install -r android/build/$app_name.apk
-    adb shell am start -n $app_package/$main_activity
+    if [[ $1 != "release" ]]; then
+        echo "Installing and opening application"
+        adb install -r android/build/$app_name.apk
+        adb shell am start -n $app_package/$main_activity
+    fi
 fi

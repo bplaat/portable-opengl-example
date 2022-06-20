@@ -60,6 +60,7 @@ void *Font::renderText(const char *text, uint32_t size, uint32_t color, int32_t 
         }
     }
 
+    // No cleanup needed because all Java Objects are garbage collected I think
     *bitmapWidth = width;
     *bitmapHeight = height;
     return convertedData;
