@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.WindowInsetsController;
 import android.view.WindowInsets;
+import android.view.WindowManager;
 import android.view.View;
 
 public class MainActivity extends Activity {
@@ -14,6 +15,14 @@ public class MainActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            getWindow().setDecorFitsSystemWindows(false);
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            WindowManager.LayoutParams attributes = getWindow().getAttributes();
+            attributes.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
+            getWindow().setAttributes(attributes);
+        }
 
         LibGame.context = this; // Hacky
 
@@ -51,11 +60,10 @@ public class MainActivity extends Activity {
     @SuppressWarnings("deprecation")
     private void hideSystemUI() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            getWindow().setDecorFitsSystemWindows(false);
             WindowInsetsController controller = getWindow().getInsetsController();
             if (controller != null) {
-                controller.hide(WindowInsets.Type.statusBars() | WindowInsets.Type.navigationBars());
                 controller.setSystemBarsBehavior(WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+                controller.hide(WindowInsets.Type.systemBars());
             }
         } else {
             getWindow().getDecorView().setSystemUiVisibility(
