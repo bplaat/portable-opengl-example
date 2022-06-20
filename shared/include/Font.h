@@ -29,6 +29,8 @@ class Font {
 
     static Font *loadFromFile(const char *path);
 
+    ~Font();
+
     int32_t measureText(const char *text, uint32_t size);
 
     void *renderText(const char *text, uint32_t size, uint32_t color, int32_t *bitmapWidth, int32_t *bitmapHeight);

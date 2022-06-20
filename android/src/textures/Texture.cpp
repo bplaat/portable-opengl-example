@@ -9,10 +9,13 @@ Texture *Texture::loadFromFile(const char *path, bool transparent, bool pixelate
     // Call Texture_Load method that loads and decodes a bitmap from the assets folder
     jmethodID Texture_LoadId =
         env->GetStaticMethodID(libGameClass, "Texture_Load", "(Ljava/lang/String;)Lcom/example/portablegl/Texture;");
-    jobject textureObject = env->CallStaticObjectMethod(libGameClass, Texture_LoadId, env->NewStringUTF(path));
+    jstring pathString = env->NewStringUTF(path);
+    jobject textureObject = env->CallStaticObjectMethod(libGameClass, Texture_LoadId, pathString);
+    env->DeleteLocalRef(pathString);
     if (textureObject == NULL) {
         Log::error("Can't load texture file: %s", texture->path);
     }
+
     jclass textureClass = env->GetObjectClass(textureObject);
     jfieldID widthId = env->GetFieldID(textureClass, "width", "I");
     jfieldID heightId = env->GetFieldID(textureClass, "height", "I");

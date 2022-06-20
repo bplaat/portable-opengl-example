@@ -17,6 +17,8 @@ Font *Font::loadFromFile(const char *path) {
     return font;
 }
 
+Font::~Font() {}
+
 int32_t Font::measureText(const char *text, uint32_t size) {
     float scale = stbtt_ScaleForPixelHeight(&fontInfo, size);
     int xPadding = size / 4;

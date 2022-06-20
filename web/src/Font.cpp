@@ -15,6 +15,8 @@ Font *Font::loadFromFile(const char *path) {
     return font;
 }
 
+Font::~Font() {}
+
 int32_t Font::measureText(const char *text, uint32_t size) {
     return Font_MeasureText(fontFace, text, size);
 }

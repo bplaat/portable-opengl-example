@@ -12,7 +12,7 @@ if [ "$1" == "key" ]; then
 
 elif [ "$1" == "log" ]; then
     adb logcat -c
-    adb logcat PortableGL:D *:E
+    adb logcat PortableGL:D *:E SystemUpdate:S
 
 else
     mkdir -p android/build

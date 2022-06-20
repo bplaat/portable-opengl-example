@@ -1,27 +1,39 @@
 #include "Font.h"
+#include "Log.h"
 #include "std.h"
 
 Font *Font::loadFromFile(const char *path) {
     Font *font = new Font(path);
     jmethodID Font_LoadId =
         env->GetStaticMethodID(libGameClass, "Font_Load", "(Ljava/lang/String;)Landroid/graphics/Typeface;");
-    font->typeface = env->CallStaticObjectMethod(libGameClass, Font_LoadId, env->NewStringUTF(path));
+    jstring pathString = env->NewStringUTF(path);
+    font->typeface = env->NewGlobalRef(env->CallStaticObjectMethod(libGameClass, Font_LoadId, pathString));
+    env->DeleteLocalRef(pathString);
     font->loaded = true;
     return font;
+}
+
+Font::~Font() {
+    env->DeleteGlobalRef(typeface);
 }
 
 int32_t Font::measureText(const char *text, uint32_t size) {
     jmethodID Font_MeasureTextId =
         env->GetStaticMethodID(libGameClass, "Font_MeasureText", "(Landroid/graphics/Typeface;Ljava/lang/String;I)I");
-    return env->CallStaticIntMethod(libGameClass, Font_MeasureTextId, typeface, env->NewStringUTF(text), size);
+    jstring textString = env->NewStringUTF(text);
+    jint width = env->CallStaticIntMethod(libGameClass, Font_MeasureTextId, typeface, textString, size);
+    env->DeleteLocalRef(textString);
+    return width;
 }
 
 void *Font::renderText(const char *text, uint32_t size, uint32_t color, int32_t *bitmapWidth, int32_t *bitmapHeight) {
     jmethodID Font_RenderTextId =
         env->GetStaticMethodID(libGameClass, "Font_RenderText",
                                "(Landroid/graphics/Typeface;Ljava/lang/String;II)Lcom/example/portablegl/Texture;");
+    jstring textString = env->NewStringUTF(text);
     jobject textureObject =
-        env->CallStaticObjectMethod(libGameClass, Font_RenderTextId, typeface, env->NewStringUTF(text), size, color);
+        env->CallStaticObjectMethod(libGameClass, Font_RenderTextId, typeface, textString, size, color);
+    env->DeleteLocalRef(textString);
 
     jclass textureClass = env->GetObjectClass(textureObject);
     jfieldID widthId = env->GetFieldID(textureClass, "width", "I");

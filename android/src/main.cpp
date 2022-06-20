@@ -4,7 +4,7 @@
 
 JNIEXPORT void JNICALL Java_com_example_portablegl_LibGame_init(JNIEnv *_env, jclass _libGameClass) {
     env = _env;
-    libGameClass = _libGameClass;
+    libGameClass = (jclass)env->NewGlobalRef(_libGameClass);
     Game::getInstance()->init();
 }
 
