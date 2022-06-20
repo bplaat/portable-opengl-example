@@ -118,12 +118,8 @@ void Game::init() {
     Log::info("Using WebAssembly SIMD");
 #endif
 
-// Create boxes
-#ifdef PLATFORM_ANDROID
+    // Create boxes
     boxesSize = 2 * 1024;
-#else
-    boxesSize = 4 * 1024;
-#endif
     boxes = (Box **)malloc(boxesSize * sizeof(Box *));
     for (size_t i = 0; i < boxesSize; i++) {
         boxes[i] = new Box(random);
@@ -205,12 +201,12 @@ void Game::init() {
     glEnableVertexAttribArray(texturePositionLocation);
 
     // Load fonts
-    // textFont = Font::loadFromFile("fonts/PressStart2P-Regular.ttf");
+    textFont = Font::loadFromFile("fonts/PressStart2P-Regular.ttf");
 
     // Load textures
     crateTexture = Texture::loadFromFile("textures/crate.jpg", false, false);
     treeTexture = Texture::loadFromFile("textures/tree.png", true, false);
-    // textTexture = NULL;
+    textTexture = NULL;
 
     // Create camera
     camera = new PerspectiveCamera(radians(75), (float)width / (float)height, 0.1, 1000);
@@ -232,18 +228,18 @@ void Game::onResize(int32_t width, int32_t height, float scale) {
 }
 
 void Game::update(float delta) {
-    //     // Create text texture when font is loaded
-    //     if (textFont->loaded && textTexture == NULL) {
-    // #ifdef PLATFORM_ANDROID
-    //         textTexture = TextTexture::fromText("Android OpenGL Example!!!", textFont, 32, 0x0000ff);
-    // #endif
-    // #ifdef PLATFORM_DESKTOP
-    //         textTexture = TextTexture::fromText("Desktop OpenGL Example!!!", textFont, 32, 0x0000ff);
-    // #endif
-    // #ifdef PLATFORM_WEB
-    //         textTexture = TextTexture::fromText("WebAssembly WebGL Example!!!", textFont, 32, 0x0000ff);
-    // #endif
-    //     }
+    // Create text texture when font is loaded
+    if (textFont->loaded && textTexture == NULL) {
+#ifdef PLATFORM_ANDROID
+        textTexture = TextTexture::fromText("Android OpenGL Example!!!", textFont, 20, 0x0000ff);
+#endif
+#ifdef PLATFORM_DESKTOP
+        textTexture = TextTexture::fromText("Desktop OpenGL Example!!!", textFont, 32, 0x0000ff);
+#endif
+#ifdef PLATFORM_WEB
+        textTexture = TextTexture::fromText("WebAssembly WebGL Example!!!", textFont, 32, 0x0000ff);
+#endif
+    }
 
     // Update boxes
     for (size_t i = 0; i < boxesSize; i++) {
@@ -316,16 +312,22 @@ void Game::render() {
         glDrawArrays(GL_TRIANGLES, 0, 6);
     }
 
-    // // Draw text
-    // if (textTexture != NULL && textTexture->loaded) {
-    //     Matrix4 textPlaneMatrix;
-    //     textPlaneMatrix.rect(16 + 256 + 32, 16 + (256 - textTexture->height) / 2, textTexture->width,
-    //                          textTexture->height);
-    //     glUniformMatrix4fv(matrixUniform, 1, GL_FALSE, &textPlaneMatrix.elements[0]);
+    // Draw text
+    if (textTexture != NULL && textTexture->loaded) {
+        Matrix4 textPlaneMatrix;
 
-    //     glBindTexture(GL_TEXTURE_2D, textTexture->texture);
-    //     glDrawArrays(GL_TRIANGLES, 0, 6);
-    // }
+#ifdef PLATFORM_ANDROID
+        textPlaneMatrix.rect(16 + 128 + 32, 16 + (128 - textTexture->height) / 2, textTexture->width,
+                             textTexture->height);
+#else
+        textPlaneMatrix.rect(16 + 256 + 32, 16 + (256 - textTexture->height) / 2, textTexture->width,
+                             textTexture->height);
+#endif
+        glUniformMatrix4fv(matrixUniform, 1, GL_FALSE, &textPlaneMatrix.elements[0]);
+
+        glBindTexture(GL_TEXTURE_2D, textTexture->texture);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+    }
     glDisable(GL_BLEND);
     glDisable(GL_CULL_FACE);
 }

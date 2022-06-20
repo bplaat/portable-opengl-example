@@ -14,7 +14,7 @@ if [ "$1" == "key" ]; then
 
 elif [ "$1" == "log" ]; then
     adb logcat -c
-    adb logcat *:E
+    adb logcat PortableGL:D *:E
 
 else
     mkdir -p android/build
@@ -55,7 +55,7 @@ else
     javac -h android/include -cp $PLATFORM android/app/src/com/example/portablegl/LibGame.java android/app/src/com/example/portablegl/Texture.java
     rm android/app/src/com/example/portablegl/LibGame.class android/app/src/com/example/portablegl/Texture.class
     mkdir -p android/build/android
-    for file in $(find android/src shared/src -name *.c -o -name *.cpp); do
+    for file in $(find shared/src android/src -name *.c -o -name *.cpp); do
         name=${file%.*}
         ext=${file##*.}
         if [[ ${file::6} = "shared" ]]; then

@@ -1,6 +1,9 @@
 #pragma once
 
 #include <stdint.h>
+#ifdef PLATFORM_ANDROID
+    #include <jni.h>
+#endif
 #ifdef PLATFORM_DESKTOP
     #include "stb_truetype/stb_truetype.h"
 #endif
@@ -8,6 +11,9 @@
 class Font {
   public:
     const char *path;
+#ifdef PLATFORM_ANDROID
+    jobject typeface;
+#endif
 #ifdef PLATFORM_DESKTOP
     uint8_t *fontData;
     stbtt_fontinfo fontInfo;

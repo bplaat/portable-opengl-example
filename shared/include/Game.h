@@ -22,10 +22,10 @@ class Game {
     uint32_t matrixUniform;
     uint32_t cameraUniform;
     uint32_t textureUniform;
-    // Font *textFont;
+    Font *textFont;
     Texture *crateTexture;
     Texture *treeTexture;
-    // TextTexture *textTexture;
+    TextTexture *textTexture;
     PerspectiveCamera *camera;
 
     Box **boxes;

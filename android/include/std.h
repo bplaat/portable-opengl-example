@@ -1,6 +1,6 @@
 #pragma once
 
-#include "com_example_portablegl_LibGame.h"
+#include <jni.h>
 #include <math.h>
 #include <stdint.h>
 #include <stdio.h>
