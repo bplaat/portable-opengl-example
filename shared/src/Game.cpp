@@ -234,10 +234,10 @@ void Game::update(float delta) {
         textTexture = TextTexture::fromText("Android OpenGL Example!!!", textFont, 20, 0x0000ff);
 #endif
 #ifdef PLATFORM_DESKTOP
-        textTexture = TextTexture::fromText("Desktop OpenGL Example!!!", textFont, 32, 0x0000ff);
+        textTexture = TextTexture::fromText("Desktop OpenGL Example!!!", textFont, 24, 0x0000ff);
 #endif
 #ifdef PLATFORM_WEB
-        textTexture = TextTexture::fromText("WebAssembly WebGL Example!!!", textFont, 32, 0x0000ff);
+        textTexture = TextTexture::fromText("WebAssembly WebGL Example!!!", textFont, 24, 0x0000ff);
 #endif
     }
 
@@ -302,9 +302,9 @@ void Game::render() {
     if (treeTexture->loaded) {
         Matrix4 treePlaneMatrix;
 #ifdef PLATFORM_ANDROID
-        treePlaneMatrix.rect(16, 16, 128, 128);
+        treePlaneMatrix.rect(16, 16, 100, 100);
 #else
-        treePlaneMatrix.rect(16, 16, 256, 256);
+        treePlaneMatrix.rect(16, 16, 200, 200);
 #endif
         glUniformMatrix4fv(matrixUniform, 1, GL_FALSE, &treePlaneMatrix.elements[0]);
 
@@ -317,10 +317,10 @@ void Game::render() {
         Matrix4 textPlaneMatrix;
 
 #ifdef PLATFORM_ANDROID
-        textPlaneMatrix.rect(16 + 128 + 32, 16 + (128 - textTexture->height) / 2, textTexture->width,
+        textPlaneMatrix.rect(16 + 100 + 32, 16 + (100 - textTexture->height) / 2, textTexture->width,
                              textTexture->height);
 #else
-        textPlaneMatrix.rect(16 + 256 + 32, 16 + (256 - textTexture->height) / 2, textTexture->width,
+        textPlaneMatrix.rect(16 + 200 + 32, 16 + (200 - textTexture->height) / 2, textTexture->width,
                              textTexture->height);
 #endif
         glUniformMatrix4fv(matrixUniform, 1, GL_FALSE, &textPlaneMatrix.elements[0]);
