@@ -8,7 +8,7 @@ PATH=$PATH:$ANDROID_HOME/build-tools/31.0.0:$ANDROID_HOME/platform-tools:$ANDROI
 PLATFORM=$ANDROID_HOME/platforms/android-31/android.jar
 
 if [ "$1" == "key" ]; then
-    keytool -genkey -validity 7120 -keystore keystore.jks -keyalg RSA -keysize 4096 -storepass $password -keypass $password
+    keytool -genkey -validity 7120 -keystore android/keystore.jks -keyalg RSA -keysize 4096 -storepass $password -keypass $password
 
 elif [ "$1" == "log" ]; then
     adb logcat -c
