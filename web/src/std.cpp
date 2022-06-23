@@ -1,22 +1,43 @@
 #include "std.h"
 
-uint32_t bumpPtr = (uint32_t)&__heap_base;
-
+// A very simple malloc and free implementation for WebAssembly create by Bastiaan van der Plaat
+// Before every alloc block there is a uint32_t which contains the size of the following block
+// When allocated the top bit is set when freed the top bit is cleared so the block can be reused
+// When the end of memory is reach the memory is grow by pages until the next block can be allocated
+// This system is very slow O(n) I think because it loops over all blocks to find a new one but it is easy
+uint32_t *nextBlockHeader = (uint32_t *)&__heap_base;
 __attribute__((export_name("malloc"))) void *malloc(size_t size) {
-    uint32_t nextBumpPtr = (bumpPtr + size) + (bumpPtr + size) % 4;
-    uint32_t memSize = __builtin_wasm_memory_size(0) * WASM_PAGE_SIZE;
-    if (nextBumpPtr > memSize) {
-        __builtin_wasm_memory_grow(0, ((nextBumpPtr - memSize) + (WASM_PAGE_SIZE - 1)) / WASM_PAGE_SIZE);
+    // Align all allocations to pointer size bytes
+    size_t alignedSize = size + (sizeof(size_t) - (size % sizeof(size_t)));
+
+    // Loop over all blocks and check if they are freed and the right size
+    uint32_t *blockHeader = (uint32_t *)&__heap_base;
+    while (blockHeader != nextBlockHeader) {
+        uint32_t blockSize = *blockHeader & 0x7fffffff;
+        if ((*blockHeader & 0x80000000) == 0 && blockSize >= alignedSize) {
+            // When there is a free block of at least the right size allocate it
+            *blockHeader |= 0x80000000;
+            return blockHeader + sizeof(uint32_t);
+        }
+        blockHeader += sizeof(uint32_t) + blockSize;
     }
 
-    uint32_t ptr = bumpPtr;
-    bumpPtr = nextBumpPtr;
-    return (void *)ptr;
+    // When the next block header falls outside of the current memory grow it X amount of pages
+    nextBlockHeader += sizeof(uint32_t) + alignedSize;
+    uint32_t memorySize = __builtin_wasm_memory_size(0) * WASM_PAGE_SIZE;
+    if ((uintptr_t)nextBlockHeader > memorySize) {
+        __builtin_wasm_memory_grow(0, (((uintptr_t)nextBlockHeader - memorySize) + (WASM_PAGE_SIZE - 1)) / WASM_PAGE_SIZE);
+    }
+
+    // When we can't find a freed block to reallocate allocate a new block at the end
+    *blockHeader = 0x80000000 | alignedSize;
+    return blockHeader + sizeof(uint32_t);
 }
 
 __attribute__((export_name("free"))) void free(void *ptr) {
-    (void)ptr;
-    // Nothing to do here :)
+    // Clear the top bit of this block header to free it
+    uint32_t *blockHeader = (uint32_t *)ptr - sizeof(uint32_t);
+    *blockHeader &= 0x7fffffff;
 }
 
 void *operator new(size_t size) {
