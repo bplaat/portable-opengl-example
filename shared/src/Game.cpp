@@ -8,7 +8,7 @@ const char *vertexShaderSource =
 #if defined(PLATFORM_ANDROID) || defined(PLATFORM_WEB)
     "#version 300 es\n"
 #endif
-#ifdef PLATFORM_DESKTOPx
+#ifdef PLATFORM_DESKTOP
     "#version 330 core\n"
 #endif
     "in vec4 a_position;\n"
