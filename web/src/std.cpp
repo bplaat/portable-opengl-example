@@ -16,7 +16,13 @@ __attribute__((export_name("malloc"))) void *malloc(size_t size) {
         uint32_t blockSize = *blockHeader & 0x7fffffff;
         if ((*blockHeader & 0x80000000) == 0 && blockSize >= alignedSize) {
             // When there is a free block of at least the right size allocate it
-            *blockHeader |= 0x80000000;
+            // When the block has space over create free block of the remeaning space
+            if (blockSize - alignedSize > (sizeof(uint32_t) + 16)) {
+                *blockHeader = 0x80000000 | alignedSize;
+                *(blockHeader + sizeof(uint32_t) + alignedSize) = blockSize - alignedSize - sizeof(uint32_t);
+            } else {
+                *blockHeader |= 0x80000000;
+            }
             return blockHeader + sizeof(uint32_t);
         }
         blockHeader += sizeof(uint32_t) + blockSize;
