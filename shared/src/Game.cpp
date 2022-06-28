@@ -315,7 +315,6 @@ void Game::render() {
     // Draw text
     if (textTexture != NULL && textTexture->loaded) {
         Matrix4 textPlaneMatrix;
-
 #ifdef PLATFORM_ANDROID
         textPlaneMatrix.rect(16 + 100 + 32, 16 + (100 - textTexture->height) / 2, textTexture->width,
                              textTexture->height);
